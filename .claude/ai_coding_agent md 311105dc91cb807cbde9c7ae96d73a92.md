@@ -60,6 +60,7 @@ lib/
 │    ├── incidents/
 │    ├── notifications/
 │    ├── profile/
+│    ├── chatbot/
 │
 ├── shared/
 │    ├── widgets/
@@ -149,6 +150,54 @@ After submit:
 - Tracking ID
 - Estimated response time
 - Status tracker
+
+---
+
+# 8.1 AI Chatbot (Multilingual Assistant)
+
+Location: lib/features/chatbot/screens/chatbot_screen.dart
+
+Navigation:
+
+- Center notch FAB in bottom navigation (BottomAppBar + CircularNotchedRectangle)
+- Help Screen "Chat with us" button
+- Opens as full-screen push navigation
+
+Languages:
+
+- English (en)
+- Sinhala (si) – සිංහල
+- Tamil (ta) – தமிழ்
+
+Features:
+
+- Language selector chips in header
+- Localized welcome message per language
+- Quick suggestion chips (4 topics)
+- Bot avatar with gradient background
+- Typing indicator with animated dots
+- Pattern-matching responses for:
+  - Certificate/document applications
+  - Request tracking & status
+  - Office hours & contact info
+  - Community issue reporting
+- Language switching clears conversation and restarts
+- Input area with rounded text field and send button
+
+UI Components:
+
+- Header: back button, bot avatar, localized title, online status
+- Language bar: EN / සිංහල / தமிழ் toggle chips
+- Message bubbles: bot (white, left) / user (blue, right) with avatars
+- Quick suggestions: pastel blue chips with primary text
+- Input: rounded text field + gradient send button
+
+Future Enhancements:
+
+- Connect to NLP/LLM API backend (Cloud Functions)
+- Voice input via speech_to_text
+- Conversation history persistence (Hive/Firestore)
+- Context-aware responses based on user profile
 
 ---
 

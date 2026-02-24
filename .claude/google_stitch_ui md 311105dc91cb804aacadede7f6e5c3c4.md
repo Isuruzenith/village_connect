@@ -96,12 +96,20 @@ Order:
 4. Announcements
 5. My Profile
 
-Bottom Navigation (max 4 items):
+Bottom Navigation (4 items + center notch AI Bot FAB):
 
 - Home
-- My Requests
-- Notifications
+- Requests
+- **AI Bot** (center notch FloatingActionButton, blue gradient, smart_toy icon)
+- Notices
 - Help
+
+Center Notch FAB:
+
+- 62px circular button with gradient (primary → primaryLight)
+- CircularNotchedRectangle shape on BottomAppBar
+- "AI Bot" label below the notch
+- Opens ChatbotScreen on tap
 
 No hamburger menu.
 
@@ -177,7 +185,55 @@ Soft yellow background.
 
 ---
 
-# 10. Kiosk Mode Variant
+# 10. AI Chatbot UI Specification
+
+Layout: Full-screen push navigation from FAB or Help Screen
+
+Header:
+- Back button + Bot avatar (blue gradient, rounded 14px, smart_toy icon)
+- Localized title ("Village Assistant" / "ගම්මාන සහායක" / "கிராம உதவியாளர்")
+- Green online status indicator
+
+Language Bar:
+- Secondary surface background (#E8EEF9)
+- 3 toggle chips: English / සිංහල / தமிழ்
+- Selected: Primary blue background, white text
+- Unselected: White background, secondary text, border
+
+Chat Bubbles:
+- Bot: White card, left-aligned, 16px rounded (bottom-left 4px), border, shadow
+- User: Primary blue background, right-aligned, 16px rounded (bottom-right 4px)
+- Bot avatar: 32px blue gradient square, smart_toy icon
+- User avatar: 32px secondary surface square, person icon
+- Text: 14px caption style, 1.5 line height
+
+Quick Suggestions:
+- Shown only on first visit (1 message in chat)
+- Pastel blue chips (#DCE8FF) with primary text
+- Rounded 20px, 14px horizontal + 10px vertical padding
+
+Typing Indicator:
+- 3 animated dots (8px circles, muted color)
+- Fade animation, 800ms repeat
+- Same bubble styling as bot messages
+
+Input Area:
+- Background card with top border divider
+- Rounded text field (24px radius) with background color fill
+- Localized hint text
+- 48px gradient send button (primary → primaryLight, rounded circle)
+
+Splash Screen AI Indicator:
+- Bottom center of splash screen
+- 56px circular container with white translucent background
+- smart_toy icon (28px, white)
+- "AI Assistant Ready" label (14px, white, semi-bold)
+- "English · සිංහල · தமிழ்" subtitle (12px, white 65% opacity)
+- Small loading spinner below
+
+---
+
+# 11. Kiosk Mode Variant
 
 - Extra large buttons
 - High contrast

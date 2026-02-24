@@ -4,7 +4,7 @@
 **Platform:** Flutter (Mobile-first, single-column, offline-first)  
 **Navigation Constraints:**  
 
-- Bottom navigation bar (max 4 items: Home, Requests / My Requests, Community / Notifications, Profile / Help)  
+- Bottom navigation bar (4 tabs + center notch AI Bot FAB: Home, Requests, **AI Bot (center)**, Notices, Help)
 - Maximum navigation depth: 2 levels  
 - Forms: Step-based wizards only with progress indicator  
 - No dark mode, accessibility-first (48px tap targets, high contrast)  
@@ -19,6 +19,7 @@ This document lists **all identified screens** with purpose, key elements, and r
 - Initial loading / branding screen
 - Checks auth state, offline status, language
 - Auto-redirects to login or home
+- **AI Bot indicator at bottom center** with bot icon, "AI Assistant Ready" label, and multilingual indicator (English / සිංහල / தமிழ்)
 
 ### Language Selector
 
@@ -42,7 +43,7 @@ This document lists **all identified screens** with purpose, key elements, and r
 
 ## 2. Citizen (Resident) Screens
 
-Bottom nav: Home | Requests | Community | Profile (or similar)
+Bottom nav: Home | Requests | **AI Bot (center notch FAB)** | Notices | Help
 
 ### Home Dashboard (Proposal p.9 – User Dashboard)
 
@@ -174,11 +175,34 @@ Different home after role login
 - In-app list (push + categorized: urgent red, government blue, etc.)
 - Mark read
 
-### Help / Support / Chatbot Interface (Proposal p.19)
+### Help / Support Screen (Proposal p.19)
 
-- FAQs
-- Simple chatbot (future / Phase 3)
-- Contact GN
+- FAQs (expandable)
+- Quick Help cards (How to Apply, Track Request, Report Issue, Contact GN)
+- Contact GN information (phone, hours, address, email)
+- "Chat with us" button → opens AI Chatbot Screen
+- Search bar for help topics
+
+### AI Chatbot Screen (Multilingual Assistant)
+
+- **Navigation**: Accessible from center notch FAB in bottom navigation + Help Screen "Chat with us" button
+- **Language Selector**: Top bar with EN / සිංහල / தமிழ் toggle chips
+- **Chat Interface**: Full conversation UI with message bubbles
+  - Bot messages: White card with blue bot avatar (left-aligned)
+  - User messages: Blue background with user avatar (right-aligned)
+  - Typing indicator with animated dots
+- **Quick Suggestions**: Contextual suggestion chips shown on first visit
+  - "How to apply for a certificate?"
+  - "Track my application"
+  - "Office hours & contact"
+  - "Report a community issue"
+- **Multilingual Responses**: All bot responses available in English, Sinhala, Tamil
+  - Pattern-matching for certificate, tracking, office info, and reporting topics
+  - Default fallback response listing all available help topics
+- **Input Area**: Text field with send button (rounded, blue gradient)
+- **Bot Avatar**: Blue gradient rounded square with smart_toy icon
+- **Header**: Back button, bot avatar, "Village Assistant" title (localized), online status
+- **Language Switch**: Clears chat and restarts with welcome message in selected language
 
 ### Offline Mode Banner
 
@@ -187,12 +211,12 @@ Different home after role login
 
 ## Phase Notes & Gaps
 
-- **Phase 1 priority**: Citizen auth → Home → Certificate flow → Tracking → Notices → Notifications
+- **Phase 1 priority**: Citizen auth → Home → Certificate flow → Tracking → Notices → Notifications → **AI Chatbot (multilingual)**
 - **Phase 2**: Official dashboard, incident reporting (not heavily wired in proposal), Tamil support
-- **Phase 3**: Voice input/assistance, SMS sync, Kiosk mode variant (larger buttons, audio, auto-logout)
+- **Phase 3**: Voice input/assistance, SMS sync, Kiosk mode variant (larger buttons, audio, auto-logout), **AI Chatbot backend integration (NLP/LLM API)**
 - **Missing / future**: Incident reporting wizard, one-tap emergency, mass broadcast tool, digital signature UI
 - No payment screens (explicitly excluded)
 
 This list stays faithful to provided documents. Screens added only when strongly required by features (e.g., confirmation after submit, detail views). No multi-village scaling or national integration.
 
-Last updated: based on proposal wireframes + PRD/AI guide.
+Last updated: AI Chatbot feature added with multilingual support and center notch navigation.
