@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/Isuruzenith/village_connect/compare/v1.1.1...v1.2.0) (2026-02-24)
+
+
+### Features
+
+* migrate navigation to GoRouter and fix compatibility ([50f534c](https://github.com/Isuruzenith/village_connect/commit/50f534c3b81b22f575f6cb52cb2845f1e81a837b))
+* migrate navigation to GoRouter and fix compatibility ([fed42c2](https://github.com/Isuruzenith/village_connect/commit/fed42c2ef486254b4d030d05f94d903f240b6a1b))
+
 ## [1.1.1](https://github.com/Isuruzenith/village_connect/compare/v1.1.0...v1.1.1) (2026-02-24)
 
 
