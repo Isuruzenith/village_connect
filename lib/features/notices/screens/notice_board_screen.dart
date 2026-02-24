@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
@@ -290,7 +291,18 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          context.push(
+            '/notice-detail',
+            extra: {
+              'title': notice.title,
+              'content': notice.body,
+              'category': notice.category,
+              'date': notice.date,
+              'hasAttachment': 'false',
+            },
+          );
+        },
         borderRadius: BorderRadius.circular(20),
         child: Container(
           padding: const EdgeInsets.all(20),

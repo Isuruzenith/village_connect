@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../chatbot/screens/chatbot_screen.dart';
 
 class HelpScreen extends StatefulWidget {
   const HelpScreen({super.key});
@@ -149,9 +149,7 @@ class _HelpScreenState extends State<HelpScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => const ChatbotScreen())),
+          onTap: () => context.push('/chatbot'),
           borderRadius: BorderRadius.circular(24),
           child: Container(
             width: double.infinity,

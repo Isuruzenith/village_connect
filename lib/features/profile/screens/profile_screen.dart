@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../auth/screens/login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -19,7 +19,7 @@ class ProfileScreen extends StatelessWidget {
             Icons.arrow_back_rounded,
             color: AppColors.textPrimary,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
         title: Text('My Profile', style: AppTextStyles.h3),
         centerTitle: true,
@@ -304,10 +304,7 @@ class ProfileScreen extends StatelessWidget {
         height: 52,
         child: OutlinedButton.icon(
           onPressed: () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const LoginScreen()),
-              (route) => false,
-            );
+            context.go('/auth/login');
           },
           icon: const Icon(Icons.logout_rounded, size: 20),
           label: const Text('Sign Out'),

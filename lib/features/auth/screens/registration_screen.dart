@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/vc_components.dart';
@@ -73,7 +74,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   void _register() {
     if (_agreedToTerms) {
-      Navigator.of(context).pop();
+      context.pop();
     }
   }
 
@@ -109,7 +110,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             Icons.arrow_back_rounded,
             color: AppColors.textPrimary,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
         title: Text('Create Account', style: AppTextStyles.h3),
         centerTitle: true,

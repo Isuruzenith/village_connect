@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import 'login_screen.dart';
 
 /// Language selector screen.
 /// Allows the user to choose from English, Sinhala, or Tamil before
@@ -43,10 +43,7 @@ class _LanguageSelectorScreenState extends State<LanguageSelectorScreen> {
 
   void _onContinue() {
     if (_selectedIndex == null) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
+    context.go('/auth/login');
   }
 
   // ------------------------------------------------------------------
@@ -177,7 +174,7 @@ class _LanguageSelectorScreenState extends State<LanguageSelectorScreen> {
               width: isSelected ? 2 : 1,
             ),
             color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.04)
+                ? AppColors.primary.withOpacity(0.04)
                 : AppColors.card,
           ),
           child: Row(

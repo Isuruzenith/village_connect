@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import 'pending_requests_screen.dart';
-import 'post_notice_screen.dart';
 
 class OfficialDashboardScreen extends StatefulWidget {
   const OfficialDashboardScreen({super.key});
@@ -90,7 +89,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
                 Text(
                   'Welcome, Officer',
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textOnPrimary.withValues(alpha: 0.8),
+                    color: AppColors.textOnPrimary.withOpacity(0.8),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -108,7 +107,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: AppColors.textOnPrimary.withValues(alpha: 0.2),
+              color: AppColors.textOnPrimary.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -157,7 +156,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
                 Text(
                   stat.label,
                   style: AppTextStyles.captionMedium.copyWith(
-                    color: stat.textColor.withValues(alpha: 0.8),
+                    color: stat.textColor.withOpacity(0.8),
                   ),
                 ),
               ],
@@ -179,9 +178,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
           icon: Icons.rate_review_outlined,
           backgroundColor: AppColors.accentBlue,
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const PendingRequestsScreen()),
-            );
+            context.push('/official/pending');
           },
         ),
         const SizedBox(height: 10),
@@ -190,9 +187,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
           icon: Icons.campaign_outlined,
           backgroundColor: AppColors.accentYellow,
           onTap: () {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const PostNoticeScreen()));
+            context.push('/official/post-notice');
           },
         ),
         const SizedBox(height: 10),
@@ -201,7 +196,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
           icon: Icons.people_outline,
           backgroundColor: AppColors.accentGreen,
           onTap: () {
-            // Navigate to community view
+            context.push('/community');
           },
         ),
       ],
@@ -262,11 +257,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
               height: 48,
               child: TextButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const PendingRequestsScreen(),
-                    ),
-                  );
+                  context.push('/official/pending');
                 },
                 child: Text(
                   'View All',
@@ -340,11 +331,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
             height: 48,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const PendingRequestsScreen(),
-                  ),
-                );
+                context.push('/official/pending');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
