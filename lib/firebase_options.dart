@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -44,39 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'REPLACE_ME',
-    appId: 'REPLACE_ME',
-    messagingSenderId: 'REPLACE_ME',
-    projectId: 'REPLACE_ME',
-    authDomain: 'REPLACE_ME',
-    storageBucket: 'REPLACE_ME',
+    apiKey: 'AIzaSyAfLWPgoTi6v8BQKHRdUcGKVnRSCXaUGeY',
+    appId: '1:344728487984:web:9d62b71bde53cb7b4b45f5',
+    messagingSenderId: '344728487984',
+    projectId: 'village-connect-26949',
+    authDomain: 'village-connect-26949.firebaseapp.com',
+    storageBucket: 'village-connect-26949.firebasestorage.app',
+    measurementId: 'G-LG8F6J9QR9',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'REPLACE_ME',
-    appId: 'REPLACE_ME',
-    messagingSenderId: 'REPLACE_ME',
-    projectId: 'REPLACE_ME',
-    storageBucket: 'REPLACE_ME',
+    apiKey: 'AIzaSyDbpnL1xJEvHsOb4zKe0_nZFaEvO08d0wY',
+    appId: '1:344728487984:android:98650dda1c6739524b45f5',
+    messagingSenderId: '344728487984',
+    projectId: 'village-connect-26949',
+    storageBucket: 'village-connect-26949.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'REPLACE_ME',
-    appId: 'REPLACE_ME',
-    messagingSenderId: 'REPLACE_ME',
-    projectId: 'REPLACE_ME',
-    storageBucket: 'REPLACE_ME',
-    iosClientId: 'REPLACE_ME',
+    apiKey: 'AIzaSyApkNW50y64Pd49Ti-Do8DBvIGjrlNRiIw',
+    appId: '1:344728487984:ios:837e3ebeab5b212a4b45f5',
+    messagingSenderId: '344728487984',
+    projectId: 'village-connect-26949',
+    storageBucket: 'village-connect-26949.firebasestorage.app',
     iosBundleId: 'com.example.villageConnect',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'REPLACE_ME',
-    appId: 'REPLACE_ME',
-    messagingSenderId: 'REPLACE_ME',
-    projectId: 'REPLACE_ME',
-    storageBucket: 'REPLACE_ME',
-    iosClientId: 'REPLACE_ME',
+    apiKey: 'AIzaSyApkNW50y64Pd49Ti-Do8DBvIGjrlNRiIw',
+    appId: '1:344728487984:ios:837e3ebeab5b212a4b45f5',
+    messagingSenderId: '344728487984',
+    projectId: 'village-connect-26949',
+    storageBucket: 'village-connect-26949.firebasestorage.app',
     iosBundleId: 'com.example.villageConnect',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyAfLWPgoTi6v8BQKHRdUcGKVnRSCXaUGeY',
+    appId: '1:344728487984:web:080f0581de1591f64b45f5',
+    messagingSenderId: '344728487984',
+    projectId: 'village-connect-26949',
+    authDomain: 'village-connect-26949.firebaseapp.com',
+    storageBucket: 'village-connect-26949.firebasestorage.app',
+    measurementId: 'G-LJQBFFJDRY',
+  );
+
 }
