@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../features/home/screens/citizen_home_screen.dart';
-import '../../../features/documents/screens/request_tracking_screen.dart';
-import '../../../features/notifications/screens/notifications_screen.dart';
-import '../../../features/help/screens/help_screen.dart';
-import '../../../features/chatbot/screens/chatbot_screen.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../notifications/screens/notifications_screen.dart';
+import '../../notices/screens/notice_board_screen.dart';
+import '../../help/screens/help_screen.dart';
+import '../../chatbot/screens/chatbot_screen.dart';
+import 'citizen_home_screen.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -14,33 +15,39 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
-  int _selectedIndex = 0;
+  int _currentIndex = 0;
 
-  late final List<Widget> _pages;
+  final List<Widget> _screens = const [
+    CitizenHomeScreen(),
+    NotificationsScreen(),
+    SizedBox(), // Placeholder for FAB
+    NoticeBoardScreen(),
+    HelpScreen(),
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    _pages = [
-      CitizenHomeScreen(
-        onNavigateToTab: _onTabSelected,
-      ),
-      const RequestTrackingScreen(),
-      const NotificationsScreen(),
-      const HelpScreen(),
-    ];
-  }
-
-  void _onTabSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  void _onTabTapped(int index) {
+    if (index == 2) return; // Center FAB slot — skip
+    setState(() => _currentIndex = index);
   }
 
   void _openChatbot() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const ChatbotScreen()),
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const ChatbotScreen(),
+        transitionsBuilder: (_, animation, __, child) {
+          return SlideTransition(
+            position:
+                Tween<Offset>(
+                  begin: const Offset(0.0, 0.3),
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(parent: animation, curve: Curves.easeOut),
+                ),
+            child: FadeTransition(opacity: animation, child: child),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 350),
+      ),
     );
   }
 
@@ -49,131 +56,129 @@ class _AppShellState extends State<AppShell> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
+        index: _currentIndex > 2 ? _currentIndex : _currentIndex,
+        children: _screens,
       ),
-      floatingActionButton: _buildChatbotFAB(),
+      floatingActionButton: _buildFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: _buildBottomAppBar(),
+      bottomNavigationBar: _buildBottomBar(),
     );
   }
 
-  Widget _buildChatbotFAB() {
+  Widget _buildFab() {
     return Container(
-      width: 62,
-      height: 62,
+      width: 58,
+      height: 58,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryLight],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppColors.primaryGradient,
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.35),
+            color: AppColors.primary.withOpacity(0.35),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: FloatingActionButton(
-        onPressed: _openChatbot,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        shape: const CircleBorder(),
-        child: const Icon(
-          Icons.smart_toy_rounded,
-          color: Colors.white,
-          size: 28,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomAppBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 12,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: BottomAppBar(
-          height: 72,
-          color: AppColors.card,
-          elevation: 0,
-          notchMargin: 8,
-          shape: const CircularNotchedRectangle(),
-          padding: EdgeInsets.zero,
-          child: Row(
-            children: [
-              // Left side tabs
-              _buildNavItem(0, Icons.home_rounded, 'Home'),
-              _buildNavItem(1, Icons.description_outlined, 'Requests'),
-              // Center space for FAB
-              const Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SizedBox(height: 28),
-                    Text(
-                      'AI Bot',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                        height: 1.2,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                  ],
-                ),
-              ),
-              // Right side tabs
-              _buildNavItem(2, Icons.notifications_outlined, 'Notices'),
-              _buildNavItem(3, Icons.help_outline_rounded, 'Help'),
-            ],
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _openChatbot,
+          borderRadius: BorderRadius.circular(18),
+          child: const Icon(
+            Icons.smart_toy_outlined,
+            color: Colors.white,
+            size: 26,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label) {
-    final isSelected = _selectedIndex == index;
+  Widget _buildBottomBar() {
+    return BottomAppBar(
+      height: 68,
+      color: AppColors.card,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      notchMargin: 8,
+      shape: const CircularNotchedRectangle(),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(0, Icons.home_outlined, Icons.home_rounded, 'Home'),
+            _buildNavItem(
+              1,
+              Icons.notifications_none_rounded,
+              Icons.notifications_rounded,
+              'Alerts',
+            ),
+            const SizedBox(width: 48), // Space for FAB
+            _buildNavItem(
+              3,
+              Icons.article_outlined,
+              Icons.article_rounded,
+              'Notices',
+            ),
+            _buildNavItem(
+              4,
+              Icons.help_outline_rounded,
+              Icons.help_rounded,
+              'Help',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+    int index,
+    IconData icon,
+    IconData activeIcon,
+    String label,
+  ) {
+    final isActive = _currentIndex == index;
     return Expanded(
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _onTabSelected(index),
-          child: SizedBox(
-            height: 64,
+          onTap: () => _onTabTapped(index),
+          customBorder: const CircleBorder(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  icon,
-                  size: 26,
-                  color: isSelected ? AppColors.primary : AppColors.textMuted,
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? AppColors.primaryLight
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    isActive ? activeIcon : icon,
+                    color: isActive ? AppColors.primary : AppColors.textMuted,
+                    size: 22,
+                  ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    color:
-                        isSelected ? AppColors.primary : AppColors.textMuted,
-                    height: 1.2,
+                  style: AppTextStyles.small.copyWith(
+                    color: isActive ? AppColors.primary : AppColors.textMuted,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                    fontSize: 11,
                   ),
                 ),
               ],

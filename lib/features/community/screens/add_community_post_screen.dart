@@ -78,10 +78,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
         ),
         title: const Text(
           'Create Post',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
         ),
       ),
       body: SingleChildScrollView(
@@ -92,10 +89,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Post type selector
-              Text(
-                'Post Type',
-                style: AppTextStyles.label,
-              ),
+              Text('Post Type', style: AppTextStyles.label),
               const SizedBox(height: 10),
               Row(
                 children: PostType.values.map((type) {
@@ -169,10 +163,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
               const SizedBox(height: 24),
 
               // Title field
-              Text(
-                'Title',
-                style: AppTextStyles.label,
-              ),
+              Text('Title', style: AppTextStyles.label),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _titleController,
@@ -195,10 +186,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
               const SizedBox(height: 20),
 
               // Description field
-              Text(
-                'Description',
-                style: AppTextStyles.label,
-              ),
+              Text('Description', style: AppTextStyles.label),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _descriptionController,
@@ -221,10 +209,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
               const SizedBox(height: 20),
 
               // Photo upload area
-              Text(
-                'Photo',
-                style: AppTextStyles.label,
-              ),
+              Text('Photo', style: AppTextStyles.label),
               const SizedBox(height: 6),
               InkWell(
                 onTap: () {
@@ -263,8 +248,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
                           Icon(
                             Icons.camera_alt_outlined,
                             size: 36,
-                            color:
-                                AppColors.textMuted.withValues(alpha: 0.6),
+                            color: AppColors.textMuted.withValues(alpha: 0.6),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -282,10 +266,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
               const SizedBox(height: 20),
 
               // Location field
-              Text(
-                'Location',
-                style: AppTextStyles.label,
-              ),
+              Text('Location', style: AppTextStyles.label),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _locationController,
@@ -311,10 +292,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
               const SizedBox(height: 20),
 
               // Contact information field
-              Text(
-                'Contact Information',
-                style: AppTextStyles.label,
-              ),
+              Text('Contact Information', style: AppTextStyles.label),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _contactController,
@@ -354,10 +332,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
                     ),
                     elevation: 0,
                   ),
-                  child: Text(
-                    'Post',
-                    style: AppTextStyles.button,
-                  ),
+                  child: Text('Post', style: AppTextStyles.button),
                 ),
               ),
               const SizedBox(height: 24),

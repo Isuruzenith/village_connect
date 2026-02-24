@@ -12,55 +12,67 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   String _selectedFilter = 'All';
 
-  final List<String> _filters = ['All', 'Urgent', 'Government', 'Health', 'Events'];
+  final List<String> _filters = [
+    'All',
+    'Urgent',
+    'Government',
+    'Health',
+    'Events',
+  ];
 
   final List<_NotificationItem> _notifications = [
     _NotificationItem(
       title: 'Flood Warning',
-      body: 'Heavy rainfall expected in Kaduwela and surrounding areas. Please take necessary precautions and stay indoors. Emergency hotline: 117.',
+      body:
+          'Heavy rainfall expected in Kaduwela and surrounding areas. Please take necessary precautions and stay indoors. Emergency hotline: 117.',
       timeAgo: '2 hours ago',
       category: 'Urgent',
-      accentColor: AppColors.accentRed,
+      semanticColor: AppColors.error,
       isUnread: true,
     ),
     _NotificationItem(
       title: 'Application Approved',
-      body: 'Your character certificate application (REF: CC-2026-0142) has been approved. Please visit the GN Office to collect your document during office hours.',
+      body:
+          'Your character certificate application (REF: CC-2026-0142) has been approved. Please visit the GN Office to collect your document during office hours.',
       timeAgo: 'Yesterday',
       category: 'Government',
-      accentColor: AppColors.accentBlue,
+      semanticColor: AppColors.primary,
       isUnread: false,
     ),
     _NotificationItem(
       title: 'Health Camp Tomorrow',
-      body: 'Free health screening at Community Hall from 9 AM to 4 PM. Services include blood pressure, blood sugar, BMI checks, and eye screening. Bring your NIC.',
+      body:
+          'Free health screening at Community Hall from 9 AM to 4 PM. Services include blood pressure, blood sugar, BMI checks, and eye screening. Bring your NIC.',
       timeAgo: '2 days ago',
       category: 'Health',
-      accentColor: AppColors.accentGreen,
+      semanticColor: AppColors.success,
       isUnread: false,
     ),
     _NotificationItem(
       title: 'Document Ready for Pickup',
-      body: 'Your residence certificate (REF: RC-2026-0088) is ready for collection. Please bring your NIC and original application receipt to the GN Office.',
+      body:
+          'Your residence certificate (REF: RC-2026-0088) is ready for collection. Please bring your NIC and original application receipt to the GN Office.',
       timeAgo: '3 days ago',
       category: 'Government',
-      accentColor: AppColors.accentBlue,
+      semanticColor: AppColors.primary,
       isUnread: false,
     ),
     _NotificationItem(
       title: 'Village Meeting',
-      body: 'Annual village meeting scheduled for March 1 at 3:00 PM at the Community Hall. Agenda includes road development, water supply improvements, and budget review.',
+      body:
+          'Annual village meeting scheduled for March 1 at 3:00 PM at the Community Hall. Agenda includes road development, water supply improvements, and budget review.',
       timeAgo: '1 week ago',
       category: 'Events',
-      accentColor: AppColors.accentYellow,
+      semanticColor: AppColors.warning,
       isUnread: false,
     ),
     _NotificationItem(
       title: 'Road Closure Notice',
-      body: 'Main road (Kaduwela-Malabe) will be closed from 8 AM to 5 PM on Saturday for drainage improvement work. Please use alternative routes via Athurugiriya Road.',
+      body:
+          'Main road (Kaduwela-Malabe) will be closed from 8 AM to 5 PM on Saturday for drainage improvement work. Please use alternative routes via Athurugiriya Road.',
       timeAgo: '1 week ago',
       category: 'Urgent',
-      accentColor: AppColors.accentRed,
+      semanticColor: AppColors.error,
       isUnread: false,
     ),
   ];
@@ -88,9 +100,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           children: [
             _buildHeader(),
             _buildFilterChips(),
-            Expanded(
-              child: _buildNotificationsList(),
-            ),
+            Expanded(child: _buildNotificationsList()),
           ],
         ),
       ),
@@ -98,12 +108,29 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Widget _buildHeader() {
+    final unreadCount = _notifications.where((n) => n.isUnread).length;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Notifications', style: AppTextStyles.h1),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Notifications', style: AppTextStyles.h1),
+                if (unreadCount > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      '$unreadCount unread',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
           SizedBox(
             height: 48,
             child: TextButton(
@@ -126,19 +153,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       height: 48,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         itemCount: _filters.length,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final filter = _filters[index];
           final isSelected = _selectedFilter == filter;
           return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedFilter = filter;
-              });
-            },
-            child: Container(
+            onTap: () => setState(() => _selectedFilter = filter),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               alignment: Alignment.center,
               decoration: BoxDecoration(
@@ -147,11 +171,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 border: Border.all(
                   color: isSelected ? AppColors.primary : AppColors.border,
                 ),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.2),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                    : null,
               ),
               child: Text(
                 filter,
                 style: AppTextStyles.captionMedium.copyWith(
-                  color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
+                  color: isSelected
+                      ? AppColors.textOnPrimary
+                      : AppColors.textSecondary,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 ),
               ),
             ),
@@ -169,15 +205,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.notifications_off_outlined,
-              size: 56,
-              color: AppColors.textMuted.withValues(alpha: 0.5),
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceGrey,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.notifications_off_outlined,
+                size: 28,
+                color: AppColors.textMuted,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Text(
               'No notifications',
-              style: AppTextStyles.body.copyWith(color: AppColors.textMuted),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textMuted,
+              ),
             ),
           ],
         ),
@@ -185,12 +231,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
       itemCount: filtered.length,
       separatorBuilder: (_, __) => const SizedBox(height: 10),
-      itemBuilder: (context, index) {
-        return _buildNotificationCard(filtered[index]);
-      },
+      itemBuilder: (context, index) => _buildNotificationCard(filtered[index]),
     );
   }
 
@@ -201,105 +245,84 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         onTap: () => _showNotificationDetail(notification),
         borderRadius: BorderRadius.circular(14),
         child: Container(
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: notification.isUnread
-                ? AppColors.secondarySurface.withValues(alpha: 0.5)
+                ? AppColors.primaryLight.withOpacity(0.4)
                 : AppColors.card,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadowLight,
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  width: 5,
-                  decoration: BoxDecoration(
-                    color: notification.accentColor,
-                    borderRadius: const BorderRadius.horizontal(
-                      left: Radius.circular(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      notification.title,
+                      style: notification.isUnread
+                          ? AppTextStyles.bodySemiBold
+                          : AppTextStyles.bodyMedium,
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                notification.title,
-                                style: notification.isUnread
-                                    ? AppTextStyles.bodySemiBold
-                                    : AppTextStyles.bodyMedium,
-                              ),
-                            ),
-                            if (notification.isUnread) ...[
-                              const SizedBox(width: 8),
-                              Container(
-                                width: 10,
-                                height: 10,
-                                margin: const EdgeInsets.only(top: 6),
-                                decoration: const BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          notification.body,
-                          style: AppTextStyles.caption.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: notification.accentColor,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                notification.category,
-                                style: AppTextStyles.small.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.access_time_rounded,
-                              size: 14,
-                              color: AppColors.textMuted,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              notification.timeAgo,
-                              style: AppTextStyles.small,
-                            ),
-                          ],
-                        ),
-                      ],
+                  if (notification.isUnread)
+                    Container(
+                      width: 10,
+                      height: 10,
+                      margin: const EdgeInsets.only(top: 6, left: 8),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                notification.body,
+                style: AppTextStyles.caption,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: notification.semanticColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      notification.category,
+                      style: AppTextStyles.small.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: notification.semanticColor,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.access_time_rounded,
+                    size: 13,
+                    color: AppColors.textMuted,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(notification.timeAgo, style: AppTextStyles.small),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -307,10 +330,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _showNotificationDetail(_NotificationItem notification) {
-    // Mark as read when opened
-    setState(() {
-      notification.isUnread = false;
-    });
+    setState(() => notification.isUnread = false);
 
     showModalBottomSheet(
       context: context,
@@ -351,13 +371,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: notification.accentColor,
+                          color: notification.semanticColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           notification.category,
                           style: AppTextStyles.captionMedium.copyWith(
-                            color: AppColors.textSecondary,
+                            color: notification.semanticColor,
                           ),
                         ),
                       ),
@@ -368,17 +388,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         color: AppColors.textMuted,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        notification.timeAgo,
-                        style: AppTextStyles.caption,
-                      ),
+                      Text(notification.timeAgo, style: AppTextStyles.caption),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    notification.title,
-                    style: AppTextStyles.h2,
-                  ),
+                  Text(notification.title, style: AppTextStyles.h2),
                   const SizedBox(height: 16),
                   const Divider(color: AppColors.divider),
                   const SizedBox(height: 16),
@@ -425,7 +439,7 @@ class _NotificationItem {
   final String body;
   final String timeAgo;
   final String category;
-  final Color accentColor;
+  final Color semanticColor;
   bool isUnread;
 
   _NotificationItem({
@@ -433,7 +447,7 @@ class _NotificationItem {
     required this.body,
     required this.timeAgo,
     required this.category,
-    required this.accentColor,
+    required this.semanticColor,
     required this.isUnread,
   });
 }

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import 'registration_screen.dart';
+import '../../home/screens/app_shell.dart';
 
-/// Login screen for Village Connect.
-/// Provides NIC-based authentication with a clean, government-style form
-/// designed for accessibility by rural citizens aged 45+.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -18,9 +15,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nicController = TextEditingController();
   final _passwordController = TextEditingController();
-
   bool _obscurePassword = true;
-  bool _isLoading = false;
+  String _selectedLanguage = 'English';
 
   @override
   void dispose() {
@@ -29,348 +25,305 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // ------------------------------------------------------------------
-  // Actions
-  // ------------------------------------------------------------------
-
-  void _togglePasswordVisibility() {
-    setState(() => _obscurePassword = !_obscurePassword);
-  }
-
-  Future<void> _onLogin() async {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-
-    setState(() => _isLoading = true);
-
-    // Simulate network delay.
-    await Future.delayed(const Duration(milliseconds: 800));
-
-    if (!mounted) return;
-
-    setState(() => _isLoading = false);
-
-    Navigator.pushReplacementNamed(context, '/home');
-  }
-
-  void _onForgotPassword() {
-    // Placeholder -- navigate to forgot-password flow when implemented.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Forgot password flow coming soon'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _onRegister() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const RegistrationScreen()),
-    );
-  }
-
-  // ------------------------------------------------------------------
-  // Validation
-  // ------------------------------------------------------------------
-
-  String? _validateNic(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Please enter your NIC number';
+  void _login() {
+    if (_formKey.currentState!.validate()) {
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const AppShell()));
     }
-    final trimmed = value.trim();
-    // Accept old-format (9 digits + V/X) or new-format (12 digits).
-    final oldFormat = RegExp(r'^\d{9}[VvXx]$');
-    final newFormat = RegExp(r'^\d{12}$');
-    if (!oldFormat.hasMatch(trimmed) && !newFormat.hasMatch(trimmed)) {
-      return 'Enter a valid NIC (e.g. 123456789V or 200012345678)';
-    }
-    return null;
   }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your password';
-    }
-    if (value.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
-    return null;
-  }
-
-  // ------------------------------------------------------------------
-  // Build
-  // ------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // --- Logo ---
-                  _buildLogo(),
-
-                  const SizedBox(height: 36),
-
-                  // --- Heading ---
-                  Text(
-                    'Welcome Back',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.h1.copyWith(fontSize: 26),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Sign in with your NIC to continue',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.body.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-
-                  const SizedBox(height: 36),
-
-                  // --- NIC field ---
-                  _buildLabel('NIC Number'),
-                  const SizedBox(height: 6),
-                  TextFormField(
-                    controller: _nicController,
-                    validator: _validateNic,
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    style: AppTextStyles.body,
-                    decoration: InputDecoration(
-                      hintText: 'e.g. 123456789V',
-                      prefixIcon: const Icon(
-                        Icons.badge_outlined,
-                        color: AppColors.textMuted,
-                        size: 22,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.card,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.border),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.border),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: AppColors.primary,
-                          width: 1.5,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.error),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: AppColors.error,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // --- Password field ---
-                  _buildLabel('Password'),
-                  const SizedBox(height: 6),
-                  TextFormField(
-                    controller: _passwordController,
-                    validator: _validatePassword,
-                    obscureText: _obscurePassword,
-                    textInputAction: TextInputAction.done,
-                    style: AppTextStyles.body,
-                    onFieldSubmitted: (_) => _onLogin(),
-                    decoration: InputDecoration(
-                      hintText: 'Enter your password',
-                      prefixIcon: const Icon(
-                        Icons.lock_outline_rounded,
-                        color: AppColors.textMuted,
-                        size: 22,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                          color: AppColors.textMuted,
-                          size: 22,
-                        ),
-                        onPressed: _togglePasswordVisibility,
-                        splashRadius: 24,
-                        tooltip: _obscurePassword
-                            ? 'Show password'
-                            : 'Hide password',
-                      ),
-                      filled: true,
-                      fillColor: AppColors.card,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.border),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.border),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: AppColors.primary,
-                          width: 1.5,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.error),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: AppColors.error,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // --- Forgot password ---
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: _onForgotPassword,
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        minimumSize: const Size(48, 48),
-                      ),
-                      child: Text(
-                        'Forgot Password?',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // --- Login button ---
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _onLogin,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.textOnPrimary,
-                        disabledBackgroundColor: AppColors.primaryLight,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: Colors.white,
-                              ),
-                            )
-                          : Text('LOGIN', style: AppTextStyles.button),
-                    ),
-                  ),
-
-                  const SizedBox(height: 28),
-
-                  // --- Register link ---
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeader(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text('Welcome Back', style: AppTextStyles.h1),
+                      const SizedBox(height: 6),
                       Text(
-                        "Don't have an account? ",
-                        style: AppTextStyles.body.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                        'Sign in with your NIC to access government services.',
+                        style: AppTextStyles.caption,
                       ),
-                      GestureDetector(
-                        onTap: _onRegister,
-                        child: Text(
-                          'Register',
-                          style: AppTextStyles.bodySemiBold.copyWith(
-                            color: AppColors.primary,
+                      const SizedBox(height: 32),
+                      _buildFieldLabel('NIC Number'),
+                      const SizedBox(height: 8),
+                      _buildTextField(
+                        controller: _nicController,
+                        hint: 'Enter your NIC number',
+                        prefixIcon: Icons.badge_outlined,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'NIC number is required';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      _buildFieldLabel('Password'),
+                      const SizedBox(height: 8),
+                      _buildTextField(
+                        controller: _passwordController,
+                        hint: 'Enter your password',
+                        prefixIcon: Icons.lock_outline_rounded,
+                        obscureText: _obscurePassword,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: AppColors.textMuted,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Password is required';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            'Forgot Password?',
+                            style: AppTextStyles.captionMedium.copyWith(
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: _login,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.textOnPrimary,
+                            elevation: 2,
+                            shadowColor: AppColors.primary.withOpacity(0.3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text('Sign In', style: AppTextStyles.button),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Don't have an account? ",
+                            style: AppTextStyles.caption,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const RegistrationScreen(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Register',
+                              style: AppTextStyles.captionMedium.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      _buildLanguageSelector(),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  // ------------------------------------------------------------------
-  // Widgets
-  // ------------------------------------------------------------------
-
-  Widget _buildLogo() {
-    return Center(
-      child: Container(
-        width: 88,
-        height: 88,
-        decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.25),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(24, 40, 24, 32),
+      decoration: BoxDecoration(
+        gradient: AppColors.primaryGradient,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 1.5,
+              ),
             ),
-          ],
+            child: const Icon(
+              Icons.account_balance_rounded,
+              color: Colors.white,
+              size: 32,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Village Connect',
+            style: AppTextStyles.h2.copyWith(
+              color: Colors.white,
+              letterSpacing: -0.3,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Government Services Portal',
+            style: AppTextStyles.small.copyWith(
+              color: Colors.white.withOpacity(0.7),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFieldLabel(String label) {
+    return Text(label, style: AppTextStyles.label);
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData prefixIcon,
+    bool obscureText = false,
+    Widget? suffixIcon,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      validator: validator,
+      style: AppTextStyles.body,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: AppTextStyles.body.copyWith(color: AppColors.textMuted),
+        prefixIcon: Icon(prefixIcon, color: AppColors.textMuted, size: 20),
+        suffixIcon: suffixIcon,
+        filled: true,
+        fillColor: AppColors.surfaceGrey,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
         ),
-        child: const Icon(
-          Icons.location_city,
-          size: 44,
-          color: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.error),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
         ),
       ),
     );
   }
 
-  Widget _buildLabel(String text) {
-    return Text(text, style: AppTextStyles.label);
+  Widget _buildLanguageSelector() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceGrey,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: ['English', 'සිංහල', 'தமிழ்'].map((lang) {
+            final isActive =
+                _selectedLanguage == lang ||
+                (lang == 'English' && _selectedLanguage == 'English') ||
+                (lang == 'සිංහල' && _selectedLanguage == 'Sinhala') ||
+                (lang == 'தமிழ்' && _selectedLanguage == 'Tamil');
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedLanguage = lang == 'සිංහල'
+                      ? 'Sinhala'
+                      : lang == 'தமிழ்'
+                      ? 'Tamil'
+                      : 'English';
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: isActive ? AppColors.card : Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: isActive
+                      ? [
+                          BoxShadow(
+                            color: AppColors.shadow,
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Text(
+                  lang,
+                  style: AppTextStyles.small.copyWith(
+                    color: isActive ? AppColors.primary : AppColors.textMuted,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
   }
 }

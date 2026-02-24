@@ -23,7 +23,8 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
 
   final Map<String, String> _applicationDetails = {
     'documentType': 'Character Certificate',
-    'reason': 'Required for employment application at a government institution. Applicant is seeking a position as an administrative officer.',
+    'reason':
+        'Required for employment application at a government institution. Applicant is seeking a position as an administrative officer.',
     'submittedDate': '22 February 2026',
     'referenceNo': 'CC-2026-0142',
   };
@@ -31,7 +32,11 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
   final List<_UploadedDocument> _documents = [
     _UploadedDocument('NIC_Front.jpg', '1.2 MB', Icons.image_outlined),
     _UploadedDocument('NIC_Back.jpg', '1.1 MB', Icons.image_outlined),
-    _UploadedDocument('Employment_Letter.pdf', '245 KB', Icons.picture_as_pdf_outlined),
+    _UploadedDocument(
+      'Employment_Letter.pdf',
+      '245 KB',
+      Icons.picture_as_pdf_outlined,
+    ),
   ];
 
   @override
@@ -48,7 +53,10 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
         backgroundColor: AppColors.card,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () => Navigator.of(context).pop(),
           tooltip: 'Go back',
         ),
@@ -149,7 +157,11 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
           const SizedBox(height: 12),
           _buildInfoRow(Icons.phone_outlined, 'Phone', _citizenInfo['phone']!),
           const SizedBox(height: 12),
-          _buildInfoRow(Icons.location_on_outlined, 'Address', _citizenInfo['address']!),
+          _buildInfoRow(
+            Icons.location_on_outlined,
+            'Address',
+            _citizenInfo['address']!,
+          ),
         ],
       ),
     );
@@ -172,7 +184,9 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
               const SizedBox(height: 2),
               Text(
                 value,
-                style: AppTextStyles.body.copyWith(color: AppColors.textPrimary),
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.textPrimary,
+                ),
               ),
             ],
           ),
@@ -205,7 +219,10 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Divider(height: 1, color: AppColors.divider),
           ),
-          _buildDetailRow('Document Type', _applicationDetails['documentType']!),
+          _buildDetailRow(
+            'Document Type',
+            _applicationDetails['documentType']!,
+          ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Divider(height: 1, color: AppColors.divider),
@@ -300,11 +317,7 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
                           color: AppColors.accentBlue,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Icon(
-                          doc.icon,
-                          color: AppColors.info,
-                          size: 22,
-                        ),
+                        child: Icon(doc.icon, color: AppColors.info, size: 22),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -318,10 +331,7 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 2),
-                            Text(
-                              doc.size,
-                              style: AppTextStyles.small,
-                            ),
+                            Text(doc.size, style: AppTextStyles.small),
                           ],
                         ),
                       ),
@@ -368,7 +378,9 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
             style: AppTextStyles.body,
             decoration: InputDecoration(
               hintText: 'Enter your remarks here...',
-              hintStyle: AppTextStyles.body.copyWith(color: AppColors.textMuted),
+              hintStyle: AppTextStyles.body.copyWith(
+                color: AppColors.textMuted,
+              ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.all(16),
             ),
@@ -424,7 +436,10 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
                   onPressed: () => _showConfirmationDialog('request info'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.warning,
-                    side: const BorderSide(color: AppColors.warning, width: 1.5),
+                    side: const BorderSide(
+                      color: AppColors.warning,
+                      width: 1.5,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -505,11 +520,7 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
                   color: actionColor.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  actionIcon,
-                  color: actionColor,
-                  size: 32,
-                ),
+                child: Icon(actionIcon, color: actionColor, size: 32),
               ),
               const SizedBox(height: 20),
               Text(
@@ -589,9 +600,7 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
         content: Text('Application ${action.toLowerCase()}d successfully'),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.primary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
     Navigator.of(context).pop();

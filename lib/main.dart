@@ -30,9 +30,7 @@ class VillageConnectApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       home: const SplashScreen(),
-      routes: {
-        '/home': (context) => const AppShell(),
-      },
+      routes: {'/home': (context) => const AppShell()},
     );
   }
 }

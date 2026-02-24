@@ -60,10 +60,7 @@ class VcDashboardCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: AppTextStyles.bodySemiBold,
-                    ),
+                    Text(title, style: AppTextStyles.bodySemiBold),
                     if (subtitle != null) ...[
                       const SizedBox(height: 2),
                       Text(

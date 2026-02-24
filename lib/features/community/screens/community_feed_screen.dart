@@ -110,10 +110,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
         elevation: 0,
         title: const Text(
           'Community',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
         ),
         bottom: TabBar(
           controller: _tabController,
@@ -137,10 +134,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildLostFoundTab(),
-          _buildJobsTab(),
-        ],
+        children: [_buildLostFoundTab(), _buildJobsTab()],
       ),
       floatingActionButton: SizedBox(
         width: 56,
@@ -148,9 +142,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
         child: FloatingActionButton(
           onPressed: () {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const AddCommunityPostScreen(),
-              ),
+              MaterialPageRoute(builder: (_) => const AddCommunityPostScreen()),
             );
           },
           backgroundColor: AppColors.primary,
@@ -235,8 +227,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
                       child: Text(
                         item['type']!,
                         style: AppTextStyles.small.copyWith(
-                          color:
-                              isLost ? AppColors.error : AppColors.success,
+                          color: isLost ? AppColors.error : AppColors.success,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -286,10 +277,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
                           color: AppColors.textMuted,
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          item['date']!,
-                          style: AppTextStyles.small,
-                        ),
+                        Text(item['date']!, style: AppTextStyles.small),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -374,10 +362,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          job['company']!,
-                          style: AppTextStyles.caption,
-                        ),
+                        Text(job['company']!, style: AppTextStyles.caption),
                       ],
                     ),
                   ),
@@ -394,10 +379,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
                     color: AppColors.textMuted,
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    job['location']!,
-                    style: AppTextStyles.caption,
-                  ),
+                  Text(job['location']!, style: AppTextStyles.caption),
                 ],
               ),
               const SizedBox(height: 6),
@@ -432,10 +414,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
                     color: AppColors.textMuted,
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    'Posted: ${job['date']}',
-                    style: AppTextStyles.small,
-                  ),
+                  Text('Posted: ${job['date']}', style: AppTextStyles.small),
                 ],
               ),
               const SizedBox(height: 12),

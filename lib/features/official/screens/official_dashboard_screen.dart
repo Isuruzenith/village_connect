@@ -79,9 +79,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       decoration: const BoxDecoration(
         color: AppColors.primary,
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(24),
-        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
       child: Row(
         children: [
@@ -182,9 +180,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
           backgroundColor: AppColors.accentBlue,
           onTap: () {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const PendingRequestsScreen(),
-              ),
+              MaterialPageRoute(builder: (_) => const PendingRequestsScreen()),
             );
           },
         ),
@@ -194,11 +190,9 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
           icon: Icons.campaign_outlined,
           backgroundColor: AppColors.accentYellow,
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const PostNoticeScreen(),
-              ),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const PostNoticeScreen()));
           },
         ),
         const SizedBox(height: 10),
@@ -243,12 +237,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
                 child: Icon(icon, color: AppColors.primary, size: 24),
               ),
               const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  title,
-                  style: AppTextStyles.bodySemiBold,
-                ),
-              ),
+              Expanded(child: Text(title, style: AppTextStyles.bodySemiBold)),
               const Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 16,
@@ -335,15 +324,9 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  request.citizenName,
-                  style: AppTextStyles.bodyMedium,
-                ),
+                Text(request.citizenName, style: AppTextStyles.bodyMedium),
                 const SizedBox(height: 2),
-                Text(
-                  request.documentType,
-                  style: AppTextStyles.caption,
-                ),
+                Text(request.documentType, style: AppTextStyles.caption),
                 const SizedBox(height: 2),
                 Text(
                   'Submitted: ${request.submittedDate}',

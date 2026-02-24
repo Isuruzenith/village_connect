@@ -6,11 +6,7 @@ class VcStatusBadge extends StatelessWidget {
   final String label;
   final StatusType type;
 
-  const VcStatusBadge({
-    super.key,
-    required this.label,
-    required this.type,
-  });
+  const VcStatusBadge({super.key, required this.label, required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -92,11 +88,7 @@ class VcVerifiedBadge extends StatelessWidget {
         color: AppColors.primary,
         shape: BoxShape.circle,
       ),
-      child: Icon(
-        Icons.check,
-        color: Colors.white,
-        size: size - 6,
-      ),
+      child: Icon(Icons.check, color: Colors.white, size: size - 6),
     );
   }
 }

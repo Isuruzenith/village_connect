@@ -86,10 +86,7 @@ class VcButton extends StatelessWidget {
       return SizedBox(
         height: 22,
         width: 22,
-        child: CircularProgressIndicator(
-          strokeWidth: 2.5,
-          color: textColor,
-        ),
+        child: CircularProgressIndicator(strokeWidth: 2.5, color: textColor),
       );
     }
 

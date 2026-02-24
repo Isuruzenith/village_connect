@@ -39,7 +39,10 @@ class _PostNoticeScreenState extends State<PostNoticeScreen> {
         backgroundColor: AppColors.card,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () => Navigator.of(context).pop(),
           tooltip: 'Go back',
         ),
@@ -102,7 +105,10 @@ class _PostNoticeScreenState extends State<PostNoticeScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.primary,
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -154,7 +160,10 @@ class _PostNoticeScreenState extends State<PostNoticeScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.primary,
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -212,7 +221,10 @@ class _PostNoticeScreenState extends State<PostNoticeScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.primary,
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -283,10 +295,7 @@ class _PostNoticeScreenState extends State<PostNoticeScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          'Tap to change',
-                          style: AppTextStyles.small,
-                        ),
+                        Text('Tap to change', style: AppTextStyles.small),
                       ],
                     )
                   : Column(

@@ -99,7 +99,10 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen> {
         backgroundColor: AppColors.card,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () => Navigator.of(context).pop(),
           tooltip: 'Go back',
         ),
@@ -110,7 +113,10 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen> {
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list_rounded, color: AppColors.textPrimary),
+            icon: const Icon(
+              Icons.filter_list_rounded,
+              color: AppColors.textPrimary,
+            ),
             onPressed: () {
               // Filter action
             },
@@ -121,9 +127,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen> {
       body: Column(
         children: [
           _buildFilterChips(),
-          Expanded(
-            child: _buildRequestsList(),
-          ),
+          Expanded(child: _buildRequestsList()),
         ],
       ),
     );
@@ -237,15 +241,9 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  request.citizenName,
-                  style: AppTextStyles.bodySemiBold,
-                ),
+                Text(request.citizenName, style: AppTextStyles.bodySemiBold),
                 const SizedBox(height: 4),
-                Text(
-                  request.documentType,
-                  style: AppTextStyles.caption,
-                ),
+                Text(request.documentType, style: AppTextStyles.caption),
                 const SizedBox(height: 2),
                 Text(
                   'Submitted: ${request.submittedDate}',

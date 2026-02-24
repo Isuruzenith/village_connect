@@ -2,116 +2,163 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// VcStepIndicator — numbered step circles with connecting lines
+// ─────────────────────────────────────────────────────────────────────────────
 class VcStepIndicator extends StatelessWidget {
   final int currentStep;
   final int totalSteps;
-  final List<String> stepLabels;
+  final List<String> labels;
 
   const VcStepIndicator({
     super.key,
     required this.currentStep,
     required this.totalSteps,
-    required this.stepLabels,
+    required this.labels,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Row(
-            children: [
-              Text(
-                'Step $currentStep of $totalSteps',
-                style: AppTextStyles.captionMedium.copyWith(
-                  color: AppColors.primary,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                stepLabels[currentStep - 1],
-                style: AppTextStyles.caption,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: List.generate(totalSteps, (index) {
-            final isCompleted = index < currentStep - 1;
-            final isActive = index == currentStep - 1;
-            return Expanded(
-              child: Container(
-                height: 4,
-                margin: EdgeInsets.only(right: index < totalSteps - 1 ? 4 : 0),
+    return Container(
+      color: AppColors.card,
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        children: [
+          Row(
+            children: List.generate(totalSteps * 2 - 1, (index) {
+              if (index.isOdd) {
+                // Connecting line
+                final stepBefore = index ~/ 2;
+                return Expanded(
+                  child: Container(
+                    height: 2,
+                    color: stepBefore < currentStep
+                        ? AppColors.success
+                        : AppColors.disabledBackground,
+                  ),
+                );
+              }
+              // Step circle
+              final step = index ~/ 2;
+              final isCompleted = step < currentStep;
+              final isActive = step == currentStep;
+              return Container(
+                width: 32,
+                height: 32,
                 decoration: BoxDecoration(
                   color: isCompleted
                       ? AppColors.success
                       : isActive
-                          ? AppColors.primary
-                          : AppColors.border,
-                  borderRadius: BorderRadius.circular(2),
+                      ? AppColors.primary
+                      : AppColors.disabledBackground,
+                  shape: BoxShape.circle,
                 ),
-              ),
-            );
-          }),
-        ),
-      ],
-    );
-  }
-}
-
-class VcSectionHeader extends StatelessWidget {
-  final String title;
-  final String? actionText;
-  final VoidCallback? onAction;
-
-  const VcSectionHeader({
-    super.key,
-    required this.title,
-    this.actionText,
-    this.onAction,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: AppTextStyles.h3),
-          if (actionText != null)
-            TextButton(
-              onPressed: onAction,
-              child: Text(
-                actionText!,
-                style: AppTextStyles.captionMedium.copyWith(
-                  color: AppColors.primary,
+                child: Center(
+                  child: isCompleted
+                      ? const Icon(
+                          Icons.check_rounded,
+                          color: Colors.white,
+                          size: 16,
+                        )
+                      : Text(
+                          '${step + 1}',
+                          style: AppTextStyles.small.copyWith(
+                            color: isActive
+                                ? Colors.white
+                                : AppColors.textMuted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
-              ),
-            ),
+              );
+            }),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(totalSteps, (index) {
+              final isActive = index == currentStep;
+              final isCompleted = index < currentStep;
+              return Expanded(
+                child: Text(
+                  labels[index],
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.small.copyWith(
+                    color: isActive
+                        ? AppColors.primary
+                        : isCompleted
+                        ? AppColors.success
+                        : AppColors.textMuted,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                    fontSize: 11,
+                  ),
+                ),
+              );
+            }),
+          ),
         ],
       ),
     );
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// VcSectionHeader — left accent bar + title + optional action
+// ─────────────────────────────────────────────────────────────────────────────
+class VcSectionHeader extends StatelessWidget {
+  final String title;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  const VcSectionHeader({
+    super.key,
+    required this.title,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 3,
+          height: 20,
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(child: Text(title, style: AppTextStyles.bodySemiBold)),
+        if (actionLabel != null)
+          GestureDetector(
+            onTap: onAction,
+            child: Text(
+              actionLabel!,
+              style: AppTextStyles.captionMedium.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VcEmptyState — clean empty placeholder
+// ─────────────────────────────────────────────────────────────────────────────
 class VcEmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
-  final String? actionLabel;
-  final VoidCallback? onAction;
 
   const VcEmptyState({
     super.key,
     required this.icon,
     required this.title,
     this.subtitle,
-    this.actionLabel,
-    this.onAction,
   });
 
   @override
@@ -123,18 +170,20 @@ class VcEmptyState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
-                color: AppColors.secondarySurface,
-                borderRadius: BorderRadius.circular(20),
+                color: AppColors.surfaceGrey,
+                shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: AppColors.primary, size: 36),
+              child: Icon(icon, size: 32, color: AppColors.textMuted),
             ),
             const SizedBox(height: 20),
             Text(
               title,
-              style: AppTextStyles.h3,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
@@ -145,13 +194,6 @@ class VcEmptyState extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ],
-            if (actionLabel != null) ...[
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: onAction,
-                child: Text(actionLabel!),
-              ),
-            ],
           ],
         ),
       ),
@@ -159,6 +201,9 @@ class VcEmptyState extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// VcOfflineBanner — amber warning bar
+// ─────────────────────────────────────────────────────────────────────────────
 class VcOfflineBanner extends StatelessWidget {
   const VcOfflineBanner({super.key});
 
@@ -167,21 +212,22 @@ class VcOfflineBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: AppColors.offlineBanner,
+      color: AppColors.warningLight,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(
             Icons.wifi_off_rounded,
-            color: AppColors.offlineBannerText,
             size: 18,
+            color: AppColors.warning,
           ),
-          const SizedBox(width: 8),
-          Text(
-            'Offline Mode - Changes will sync when connected',
-            style: AppTextStyles.small.copyWith(
-              color: AppColors.offlineBannerText,
-              fontWeight: FontWeight.w500,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'You are offline. Some features may be unavailable.',
+              style: AppTextStyles.small.copyWith(
+                color: AppColors.warning,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

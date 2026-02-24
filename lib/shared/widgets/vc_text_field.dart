@@ -39,10 +39,7 @@ class VcTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.label,
-        ),
+        Text(label, style: AppTextStyles.label),
         const SizedBox(height: 6),
         TextFormField(
           controller: controller,
@@ -91,27 +88,24 @@ class VcDropdownField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.label,
-        ),
+        Text(label, style: AppTextStyles.label),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           initialValue: value,
-          hint: hint != null
-              ? Text(hint!, style: AppTextStyles.caption)
-              : null,
+          hint: hint != null ? Text(hint!, style: AppTextStyles.caption) : null,
           validator: validator,
           onChanged: onChanged,
           style: AppTextStyles.body,
-          icon: const Icon(Icons.keyboard_arrow_down_rounded,
-              color: AppColors.textMuted),
+          icon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: AppColors.textMuted,
+          ),
           decoration: const InputDecoration(),
           items: items
-              .map((item) => DropdownMenuItem<String>(
-                    value: item,
-                    child: Text(item),
-                  ))
+              .map(
+                (item) =>
+                    DropdownMenuItem<String>(value: item, child: Text(item)),
+              )
               .toList(),
         ),
       ],

@@ -2,7 +2,8 @@ class AppConstants {
   AppConstants._();
 
   static const String appName = 'Village Connect';
-  static const String appTagline = 'Connecting communities, simplifying governance';
+  static const String appTagline =
+      'Connecting communities, simplifying governance';
 
   // Spacing
   static const double spacingXS = 4.0;

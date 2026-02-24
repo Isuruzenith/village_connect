@@ -14,15 +14,15 @@ class RequestDetailScreen extends StatelessWidget {
     required this.status,
   });
 
-  // Mock data for the detail view
   Map<String, String> get _applicationDetails => {
-        'Document Type': documentType,
-        'Full Name': 'Kumara Bandara Dissanayake',
-        'NIC Number': '199512345678',
-        'Address': '42/A, Temple Road, Kadawatha, Gampaha District',
-        'Reason': 'Required for employment verification at a government institution',
-        'Submitted Date': '22 Feb 2026',
-      };
+    'Document Type': documentType,
+    'Full Name': 'Kumara Bandara Dissanayake',
+    'NIC Number': '199512345678',
+    'Address': '42/A, Temple Road, Kadawatha, Gampaha District',
+    'Reason':
+        'Required for employment verification at a government institution',
+    'Submitted Date': '22 Feb 2026',
+  };
 
   String get _gnRemarks {
     if (status == 'Approved') {
@@ -32,6 +32,32 @@ class RequestDetailScreen extends StatelessWidget {
       return 'The NIC copy provided is not legible. Please resubmit with a clear copy of the NIC (front and back).';
     }
     return '';
+  }
+
+  Color get _statusColor {
+    switch (status) {
+      case 'Approved':
+        return AppColors.success;
+      case 'Rejected':
+        return AppColors.error;
+      case 'In Review':
+        return AppColors.info;
+      default:
+        return AppColors.warning;
+    }
+  }
+
+  IconData get _statusIcon {
+    switch (status) {
+      case 'Approved':
+        return Icons.check_circle_rounded;
+      case 'Rejected':
+        return Icons.cancel_rounded;
+      case 'In Review':
+        return Icons.rate_review_rounded;
+      default:
+        return Icons.schedule_rounded;
+    }
   }
 
   @override
@@ -49,795 +75,319 @@ class RequestDetailScreen extends StatelessWidget {
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
-          'Request Details',
-          style: AppTextStyles.h3.copyWith(fontSize: 18),
-        ),
+        title: Text('Request Details', style: AppTextStyles.h3),
         centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(color: AppColors.divider, height: 1),
-        ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Divider(height: 1, color: AppColors.divider),
             _buildStatusHeader(),
-            const SizedBox(height: 24),
-            _buildTimelineProgress(),
-            const SizedBox(height: 24),
-            _buildApplicationDetailsCard(),
-            const SizedBox(height: 20),
-            if (status == 'Approved') ...[
-              _buildGNRemarksCard(context),
-              const SizedBox(height: 20),
-              _buildDownloadButton(context),
-            ],
-            if (status == 'Rejected') ...[
-              _buildRejectionCard(),
-              const SizedBox(height: 20),
-            ],
-            if (status == 'In Review') ...[
-              _buildAdditionalInfoCard(context),
-              const SizedBox(height: 20),
-            ],
-            if (status == 'Pending') ...[
-              _buildPendingInfoCard(),
-              const SizedBox(height: 20),
-            ],
-            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTimeline(),
+                  const SizedBox(height: 24),
+                  _buildDetailsCard(),
+                  if (_gnRemarks.isNotEmpty) ...[
+                    const SizedBox(height: 20),
+                    _buildRemarksCard(),
+                  ],
+                  const SizedBox(height: 24),
+                  _buildActionButtons(context),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Status Header
-  // ---------------------------------------------------------------------------
+  // ── Status Header ─────────────────────────────────────────────────────
   Widget _buildStatusHeader() {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.all(24),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: _statusColor.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: _statusColor.withOpacity(0.2)),
       ),
-      child: Column(
+      child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
-              color: _statusBgColor,
-              shape: BoxShape.circle,
+              color: _statusColor.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(
-              _statusIcon,
-              color: _statusTextColor,
-              size: 30,
-            ),
+            child: Icon(_statusIcon, color: _statusColor, size: 28),
           ),
-          const SizedBox(height: 14),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(
-              color: _statusBgColor,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              status,
-              style: AppTextStyles.captionMedium.copyWith(
-                color: _statusTextColor,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            _statusMessage,
-            style: AppTextStyles.caption,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.tag_rounded, size: 14, color: AppColors.textMuted),
-              const SizedBox(width: 4),
-              Text(
-                trackingId,
-                style: AppTextStyles.captionMedium.copyWith(
-                  color: AppColors.primary,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  status,
+                  style: AppTextStyles.h3.copyWith(color: _statusColor),
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  trackingId,
+                  style: AppTextStyles.caption.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Color get _statusBgColor {
-    switch (status) {
-      case 'Pending':
-        return AppColors.accentYellow;
-      case 'In Review':
-        return AppColors.accentBlue;
-      case 'Approved':
-        return AppColors.accentGreen;
-      case 'Rejected':
-        return AppColors.accentRed;
-      default:
-        return AppColors.accentBlue;
-    }
-  }
-
-  Color get _statusTextColor {
-    switch (status) {
-      case 'Pending':
-        return AppColors.warning;
-      case 'In Review':
-        return AppColors.info;
-      case 'Approved':
-        return AppColors.success;
-      case 'Rejected':
-        return AppColors.error;
-      default:
-        return AppColors.info;
-    }
-  }
-
-  IconData get _statusIcon {
-    switch (status) {
-      case 'Pending':
-        return Icons.schedule_rounded;
-      case 'In Review':
-        return Icons.rate_review_outlined;
-      case 'Approved':
-        return Icons.check_circle_outline_rounded;
-      case 'Rejected':
-        return Icons.cancel_outlined;
-      default:
-        return Icons.info_outline_rounded;
-    }
-  }
-
-  String get _statusMessage {
-    switch (status) {
-      case 'Pending':
-        return 'Your application has been received and is awaiting review by the Grama Niladhari.';
-      case 'In Review':
-        return 'The Grama Niladhari is currently reviewing your application. You will be notified once a decision is made.';
-      case 'Approved':
-        return 'Your application has been approved. You can download the certificate below.';
-      case 'Rejected':
-        return 'Unfortunately, your application could not be approved. Please review the reason below.';
-      default:
-        return '';
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Timeline Progress
-  // ---------------------------------------------------------------------------
-  Widget _buildTimelineProgress() {
+  // ── Timeline ──────────────────────────────────────────────────────────
+  Widget _buildTimeline() {
     final steps = [
-      {'label': 'Submitted', 'date': '22 Feb 2026'},
-      {'label': 'In Review', 'date': status == 'Pending' ? '' : '23 Feb 2026'},
-      {'label': 'Approved', 'date': status == 'Approved' ? '24 Feb 2026' : ''},
+      _TimelineStep('Application Submitted', '22 Feb 2026, 10:30 AM', true),
+      _TimelineStep(
+        'Under Review',
+        '23 Feb 2026, 9:00 AM',
+        status != 'Pending',
+      ),
+      _TimelineStep(
+        'GN Verification',
+        '24 Feb 2026, 2:00 PM',
+        status == 'Approved' || status == 'Rejected',
+      ),
+      _TimelineStep(
+        status == 'Rejected' ? 'Application Rejected' : 'Ready for Collection',
+        status == 'Approved' || status == 'Rejected'
+            ? '24 Feb 2026, 4:30 PM'
+            : 'Pending',
+        status == 'Approved' || status == 'Rejected',
+      ),
     ];
 
-    int completedIndex;
-    switch (status) {
-      case 'Pending':
-        completedIndex = 0;
-        break;
-      case 'In Review':
-        completedIndex = 1;
-        break;
-      case 'Approved':
-        completedIndex = 2;
-        break;
-      case 'Rejected':
-        completedIndex = 1;
-        break;
-      default:
-        completedIndex = 0;
-    }
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Application Progress', style: AppTextStyles.bodySemiBold),
-          const SizedBox(height: 20),
-          ...List.generate(steps.length, (index) {
-            final step = steps[index];
-            final isCompleted = index <= completedIndex;
-            final isCurrent = index == completedIndex;
-            final isRejected = status == 'Rejected' && index == completedIndex;
-            final isLast = index == steps.length - 1;
-
-            Color dotColor;
-            if (isRejected) {
-              dotColor = AppColors.error;
-            } else if (isCompleted) {
-              dotColor = AppColors.success;
-            } else {
-              dotColor = AppColors.disabledBackground;
-            }
-
-            Color lineColor;
-            if (isRejected) {
-              lineColor = AppColors.error.withValues(alpha: 0.3);
-            } else if (index < completedIndex) {
-              lineColor = AppColors.success.withValues(alpha: 0.4);
-            } else {
-              lineColor = AppColors.disabledBackground;
-            }
-
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Timeline dot and line
-                SizedBox(
-                  width: 28,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Progress', style: AppTextStyles.bodySemiBold),
+        const SizedBox(height: 14),
+        ...steps.asMap().entries.map((entry) {
+          final index = entry.key;
+          final step = entry.value;
+          final isLast = index == steps.length - 1;
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: step.isCompleted
+                          ? _statusColor
+                          : AppColors.disabledBackground,
+                      shape: BoxShape.circle,
+                    ),
+                    child: step.isCompleted
+                        ? const Icon(
+                            Icons.check_rounded,
+                            color: Colors.white,
+                            size: 14,
+                          )
+                        : Center(
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: AppColors.disabled,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                  ),
+                  if (!isLast)
+                    Container(
+                      width: 2,
+                      height: 40,
+                      color: step.isCompleted
+                          ? _statusColor.withOpacity(0.3)
+                          : AppColors.disabledBackground,
+                    ),
+                ],
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: isCurrent ? 20 : 16,
-                        height: isCurrent ? 20 : 16,
-                        decoration: BoxDecoration(
-                          color: dotColor,
-                          shape: BoxShape.circle,
-                          border: isCurrent && !isRejected
-                              ? Border.all(
-                                  color: dotColor.withValues(alpha: 0.3),
-                                  width: 3,
-                                )
-                              : null,
-                          boxShadow: isCurrent
-                              ? [
-                                  BoxShadow(
-                                    color: dotColor.withValues(alpha: 0.3),
-                                    blurRadius: 8,
-                                    spreadRadius: 1,
-                                  ),
-                                ]
-                              : null,
+                      Text(
+                        step.title,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: step.isCompleted
+                              ? AppColors.textPrimary
+                              : AppColors.textMuted,
                         ),
-                        child: isCompleted
-                            ? Icon(
-                                isRejected
-                                    ? Icons.close_rounded
-                                    : Icons.check_rounded,
-                                color: Colors.white,
-                                size: isCurrent ? 12 : 10,
-                              )
-                            : null,
                       ),
-                      if (!isLast)
-                        Container(
-                          width: 2,
-                          height: 40,
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          color: lineColor,
+                      const SizedBox(height: 2),
+                      Text(
+                        step.subtitle,
+                        style: AppTextStyles.small.copyWith(
+                          color: step.isCompleted
+                              ? AppColors.textSecondary
+                              : AppColors.textMuted,
                         ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 14),
-                // Step label and date
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top: isCurrent ? 0 : 0,
-                      bottom: isLast ? 0 : 12,
-                    ),
-                    child: Column(
+              ),
+            ],
+          );
+        }),
+      ],
+    );
+  }
+
+  // ── Details card ──────────────────────────────────────────────────────
+  Widget _buildDetailsCard() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Application Details', style: AppTextStyles.bodySemiBold),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadowLight,
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            children: _applicationDetails.entries.map((entry) {
+              final isLast = entry.key == _applicationDetails.keys.last;
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          isRejected ? 'Rejected' : step['label']!,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: isCompleted
-                                ? AppColors.textPrimary
-                                : AppColors.textMuted,
-                            fontWeight: isCurrent
-                                ? FontWeight.w600
-                                : FontWeight.w500,
+                        SizedBox(
+                          width: 120,
+                          child: Text(entry.key, style: AppTextStyles.caption),
+                        ),
+                        Expanded(
+                          child: Text(
+                            entry.value,
+                            style: AppTextStyles.bodyMedium,
                           ),
                         ),
-                        if (step['date']!.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            step['date']!,
-                            style: AppTextStyles.small,
-                          ),
-                        ],
                       ],
                     ),
                   ),
-                ),
-              ],
-            );
-          }),
-        ],
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Application Details Card
-  // ---------------------------------------------------------------------------
-  Widget _buildApplicationDetailsCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: AppColors.accentBlue,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.description_outlined,
-                  color: AppColors.primary,
-                  size: 18,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text('Application Details', style: AppTextStyles.bodySemiBold),
-            ],
-          ),
-          const SizedBox(height: 18),
-          ..._applicationDetails.entries.map((entry) {
-            return Column(
-              children: [
-                _buildDetailRow(entry.key, entry.value),
-                if (entry.key != _applicationDetails.keys.last)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Divider(color: AppColors.divider, height: 1),
-                  ),
-              ],
-            );
-          }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 120,
-          child: Text(
-            label,
-            style: AppTextStyles.caption,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            value,
-            style: AppTextStyles.bodyMedium.copyWith(fontSize: 15),
-            textAlign: TextAlign.right,
+                  if (!isLast)
+                    const Divider(height: 1, color: AppColors.divider),
+                ],
+              );
+            }).toList(),
           ),
         ),
       ],
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // GN Remarks Card (Approved)
-  // ---------------------------------------------------------------------------
-  Widget _buildGNRemarksCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(width: 5, color: AppColors.success),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: AppColors.accentGreen,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.comment_outlined,
-                            color: AppColors.success,
-                            size: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'GN Remarks',
-                          style: AppTextStyles.bodySemiBold,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      _gnRemarks,
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.textSecondary,
-                        height: 1.6,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    const Divider(color: AppColors.divider, height: 1),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.person_outline_rounded,
-                          size: 16,
-                          color: AppColors.textMuted,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Mr. H.P. Jayasinghe (GN Officer)',
-                          style: AppTextStyles.small.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '24 Feb 2026',
-                          style: AppTextStyles.small,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+  // ── Remarks card ──────────────────────────────────────────────────────
+  Widget _buildRemarksCard() {
+    final isRejected = status == 'Rejected';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('GN Remarks', style: AppTextStyles.bodySemiBold),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: isRejected ? AppColors.errorLight : AppColors.successLight,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: (isRejected ? AppColors.error : AppColors.success)
+                  .withOpacity(0.2),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Download Button (Approved)
-  // ---------------------------------------------------------------------------
-  Widget _buildDownloadButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: ElevatedButton.icon(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Downloading certificate...',
-                style: AppTextStyles.caption.copyWith(
-                  color: AppColors.textOnPrimary,
-                ),
-              ),
-              backgroundColor: AppColors.primary,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-        },
-        icon: const Icon(Icons.download_rounded, size: 22),
-        label: Text('Download Certificate', style: AppTextStyles.button),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.textOnPrimary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
           ),
-          elevation: 0,
-        ),
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Rejection Card (Rejected)
-  // ---------------------------------------------------------------------------
-  Widget _buildRejectionCard() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(width: 5, color: AppColors.error),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: AppColors.accentRed,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.error_outline_rounded,
-                            color: AppColors.error,
-                            size: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Reason for Rejection',
-                          style: AppTextStyles.bodySemiBold,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      _gnRemarks,
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.textSecondary,
-                        height: 1.6,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    const Divider(color: AppColors.divider, height: 1),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.person_outline_rounded,
-                          size: 16,
-                          color: AppColors.textMuted,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Mr. H.P. Jayasinghe (GN Officer)',
-                          style: AppTextStyles.small.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '24 Feb 2026',
-                          style: AppTextStyles.small,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: OutlinedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.refresh_rounded, size: 20),
-                        label: Text(
-                          'Resubmit Application',
-                          style: AppTextStyles.buttonSmall.copyWith(
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          side: const BorderSide(
-                            color: AppColors.primary,
-                            width: 1.5,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                isRejected
+                    ? Icons.info_outline_rounded
+                    : Icons.check_circle_outline_rounded,
+                color: isRejected ? AppColors.error : AppColors.success,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  _gnRemarks,
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textPrimary,
+                    height: 1.6,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Additional Info Card (In Review)
-  // ---------------------------------------------------------------------------
-  Widget _buildAdditionalInfoCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(width: 5, color: AppColors.warning),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: AppColors.accentYellow,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.info_outline_rounded,
-                            color: AppColors.warning,
-                            size: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Additional Information Required',
-                            style: AppTextStyles.bodySemiBold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      'The GN Officer has requested additional supporting documents. Please upload a clear colour copy of your NIC (both sides) and a utility bill as proof of residence.',
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.textSecondary,
-                        height: 1.6,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.upload_file_rounded, size: 20),
-                        label: Text(
-                          'Upload More Documents',
-                          style: AppTextStyles.buttonSmall,
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.textOnPrimary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Pending Info Card
-  // ---------------------------------------------------------------------------
-  Widget _buildPendingInfoCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.accentYellow.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.warning.withValues(alpha: 0.2),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.accentYellow,
+  // ── Action buttons ────────────────────────────────────────────────────
+  Widget _buildActionButtons(BuildContext context) {
+    if (status == 'Rejected') {
+      return SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton.icon(
+          onPressed: () {},
+          icon: const Icon(Icons.refresh_rounded, size: 20),
+          label: const Text('Resubmit Application'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.textOnPrimary,
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.hourglass_top_rounded,
-              color: AppColors.warning,
-              size: 22,
-            ),
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Waiting for Review',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.warning,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Your application is in the queue. Estimated processing time: 3-5 working days.',
-                  style: AppTextStyles.small.copyWith(
-                    color: AppColors.textSecondary,
-                    height: 1.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
+}
+
+class _TimelineStep {
+  final String title;
+  final String subtitle;
+  final bool isCompleted;
+
+  const _TimelineStep(this.title, this.subtitle, this.isCompleted);
 }

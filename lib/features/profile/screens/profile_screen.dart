@@ -1,28 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../auth/screens/login_screen.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
-
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  // Mock profile data
-  final Map<String, String> _profileData = {
-    'fullName': 'Kamal Perera',
-    'nic': '199012345678',
-    'dob': '15 March 1990',
-    'phone': '+94 77 123 4567',
-    'address': '42/A, Temple Road, Kaduwela, Colombo',
-    'village': 'Welivita South',
-    'gnDivision': 'Kaduwela 521',
-    'district': 'Colombo',
-  };
-
-  String _selectedLanguage = 'English';
 
   @override
   Widget build(BuildContext context) {
@@ -30,105 +12,99 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.card,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () => Navigator.of(context).pop(),
-          tooltip: 'Go back',
         ),
-        title: Text(
-          'My Profile',
-          style: AppTextStyles.h3.copyWith(color: AppColors.textPrimary),
-        ),
-        centerTitle: false,
+        title: Text('My Profile', style: AppTextStyles.h3),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Divider(height: 1, color: AppColors.divider),
             _buildProfileHeader(),
-            const SizedBox(height: 28),
-            _buildSectionLabel('Personal Information'),
-            const SizedBox(height: 12),
-            _buildPersonalInfoCard(),
             const SizedBox(height: 24),
-            _buildSectionLabel('Village Information'),
-            const SizedBox(height: 12),
-            _buildVillageInfoCard(),
+            _buildPersonalInfo(),
+            const SizedBox(height: 20),
+            _buildVillageInfo(),
+            const SizedBox(height: 20),
+            _buildSettingsSection(context),
             const SizedBox(height: 24),
-            _buildSectionLabel('Settings'),
-            const SizedBox(height: 12),
-            _buildSettingsCard(),
+            _buildLogoutButton(context),
             const SizedBox(height: 32),
-            _buildLogoutButton(),
-            const SizedBox(height: 24),
           ],
         ),
       ),
     );
   }
 
+  // ── Profile Header ────────────────────────────────────────────────────
   Widget _buildProfileHeader() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        gradient: AppColors.primaryGradient,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Container(
-            width: 80,
-            height: 80,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.25),
+                width: 2,
+              ),
             ),
             child: Center(
               child: Text(
                 'KP',
-                style: AppTextStyles.h1.copyWith(
-                  color: AppColors.textOnPrimary,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTextStyles.h1.copyWith(color: Colors.white),
               ),
             ),
           ),
           const SizedBox(height: 16),
           Text(
-            _profileData['fullName']!,
-            style: AppTextStyles.h2,
+            'Kamal Perera',
+            style: AppTextStyles.h2.copyWith(color: Colors.white),
           ),
           const SizedBox(height: 4),
           Text(
-            'NIC: ${_profileData['nic']}',
-            style: AppTextStyles.caption,
+            'NIC: 197512345678',
+            style: AppTextStyles.caption.copyWith(
+              color: Colors.white.withOpacity(0.7),
+            ),
           ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 48,
-            child: OutlinedButton.icon(
-              onPressed: () {
-                // Edit profile action
-              },
-              icon: const Icon(Icons.edit_outlined, size: 18),
-              label: Text(
-                'Edit Profile',
-                style: AppTextStyles.buttonSmall.copyWith(
-                  color: AppColors.primary,
-                ),
-              ),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                side: const BorderSide(color: AppColors.primary, width: 1.5),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              'Citizen • Welivita South',
+              style: AppTextStyles.small.copyWith(
+                color: Colors.white.withOpacity(0.8),
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -137,233 +113,95 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSectionLabel(String title) {
-    return Text(
-      title,
-      style: AppTextStyles.bodySemiBold.copyWith(
-        color: AppColors.textPrimary,
-      ),
+  // ── Personal Information ──────────────────────────────────────────────
+  Widget _buildPersonalInfo() {
+    return _buildInfoSection(
+      title: 'Personal Information',
+      items: [
+        _InfoRow(Icons.person_outline_rounded, 'Full Name', 'Kamal Perera'),
+        _InfoRow(Icons.phone_outlined, 'Phone', '+94 77 234 5678'),
+        _InfoRow(Icons.email_outlined, 'Email', 'kamal.perera@email.com'),
+        _InfoRow(Icons.cake_outlined, 'Date of Birth', '15 March 1975'),
+      ],
     );
   }
 
-  Widget _buildPersonalInfoCard() {
-    final items = [
-      _InfoRowData(Icons.person_outline_rounded, 'Full Name', _profileData['fullName']!),
-      _InfoRowData(Icons.badge_outlined, 'NIC Number', _profileData['nic']!),
-      _InfoRowData(Icons.calendar_today_outlined, 'Date of Birth', _profileData['dob']!),
-      _InfoRowData(Icons.phone_outlined, 'Phone Number', _profileData['phone']!),
-      _InfoRowData(Icons.location_on_outlined, 'Address', _profileData['address']!),
-    ];
-
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        children: List.generate(items.length, (index) {
-          final item = items[index];
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      item.icon,
-                      size: 20,
-                      color: AppColors.textMuted,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.label,
-                            style: AppTextStyles.small.copyWith(
-                              color: AppColors.textMuted,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            item.value,
-                            style: AppTextStyles.body.copyWith(
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (index < items.length - 1)
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: AppColors.divider,
-                  indent: 48,
-                ),
-            ],
-          );
-        }),
-      ),
+  // ── Village Information ───────────────────────────────────────────────
+  Widget _buildVillageInfo() {
+    return _buildInfoSection(
+      title: 'Village Details',
+      items: [
+        _InfoRow(Icons.holiday_village_outlined, 'Village', 'Welivita South'),
+        _InfoRow(Icons.location_on_outlined, 'GN Division', 'GN 521'),
+        _InfoRow(Icons.map_outlined, 'District', 'Colombo'),
+        _InfoRow(Icons.home_outlined, 'Address', '42/A, Temple Road, Kaduwela'),
+      ],
     );
   }
 
-  Widget _buildVillageInfoCard() {
-    final items = [
-      _InfoRowData(Icons.holiday_village_outlined, 'Village / Division', _profileData['village']!),
-      _InfoRowData(Icons.map_outlined, 'GN Division', _profileData['gnDivision']!),
-      _InfoRowData(Icons.location_city_outlined, 'District', _profileData['district']!),
-    ];
-
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
+  Widget _buildInfoSection({
+    required String title,
+    required List<_InfoRow> items,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
-        children: List.generate(items.length, (index) {
-          final item = items[index];
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      item.icon,
-                      size: 20,
-                      color: AppColors.textMuted,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.label,
-                            style: AppTextStyles.small.copyWith(
-                              color: AppColors.textMuted,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            item.value,
-                            style: AppTextStyles.body.copyWith(
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (index < items.length - 1)
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: AppColors.divider,
-                  indent: 48,
-                ),
-            ],
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget _buildSettingsCard() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                _showLanguageSelector();
-              },
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.language_rounded,
-                      size: 20,
-                      color: AppColors.textMuted,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Language',
-                        style: AppTextStyles.body,
-                      ),
-                    ),
-                    Text(
-                      _selectedLanguage,
-                      style: AppTextStyles.caption,
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      color: AppColors.textMuted,
-                    ),
-                  ],
+          Text(title, style: AppTextStyles.bodySemiBold),
+          const SizedBox(height: 12),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadowLight,
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
                 ),
-              ),
+              ],
             ),
-          ),
-          const Divider(
-            height: 1,
-            thickness: 1,
-            color: AppColors.divider,
-            indent: 48,
-          ),
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                // Navigate to About App
-              },
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
+            child: Column(
+              children: items.asMap().entries.map((entry) {
+                final item = entry.value;
+                final isLast = entry.key == items.length - 1;
+                return Column(
                   children: [
-                    const Icon(
-                      Icons.info_outline_rounded,
-                      size: 20,
-                      color: AppColors.textMuted,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'About App',
-                        style: AppTextStyles.body,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(item.icon, size: 20, color: AppColors.primary),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(item.label, style: AppTextStyles.small),
+                                const SizedBox(height: 2),
+                                Text(
+                                  item.value,
+                                  style: AppTextStyles.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      color: AppColors.textMuted,
-                    ),
+                    if (!isLast)
+                      const Divider(
+                        height: 1,
+                        indent: 50,
+                        color: AppColors.divider,
+                      ),
                   ],
-                ),
-              ),
+                );
+              }).toList(),
             ),
           ),
         ],
@@ -371,98 +209,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildLogoutButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: OutlinedButton.icon(
-        onPressed: () {
-          _showLogoutConfirmation();
-        },
-        icon: const Icon(Icons.logout_rounded, size: 20),
-        label: Text(
-          'Logout',
-          style: AppTextStyles.button.copyWith(color: AppColors.error),
-        ),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.error,
-          side: const BorderSide(color: AppColors.error, width: 1.5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showLanguageSelector() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.disabled,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+  // ── Settings ──────────────────────────────────────────────────────────
+  Widget _buildSettingsSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Settings', style: AppTextStyles.bodySemiBold),
+          const SizedBox(height: 12),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadowLight,
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
                 ),
-                const SizedBox(height: 16),
-                Text('Select Language', style: AppTextStyles.h3),
-                const SizedBox(height: 16),
-                _buildLanguageOption('English'),
-                _buildLanguageOption('Sinhala'),
-                _buildLanguageOption('Tamil'),
-                const SizedBox(height: 8),
+              ],
+            ),
+            child: Column(
+              children: [
+                _buildSettingsTile(
+                  icon: Icons.translate_rounded,
+                  title: 'Language',
+                  trailing: 'English',
+                  isFirst: true,
+                ),
+                const Divider(height: 1, indent: 50, color: AppColors.divider),
+                _buildSettingsTile(
+                  icon: Icons.notifications_none_rounded,
+                  title: 'Notifications',
+                  trailing: 'Enabled',
+                ),
+                const Divider(height: 1, indent: 50, color: AppColors.divider),
+                _buildSettingsTile(
+                  icon: Icons.security_rounded,
+                  title: 'Change Password',
+                  isLast: true,
+                ),
               ],
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
-  Widget _buildLanguageOption(String language) {
-    final isSelected = _selectedLanguage == language;
+  Widget _buildSettingsTile({
+    required IconData icon,
+    required String title,
+    String? trailing,
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {
-          setState(() {
-            _selectedLanguage = language;
-          });
-          Navigator.of(context).pop();
-        },
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        onTap: () {},
+        borderRadius: BorderRadius.vertical(
+          top: isFirst ? const Radius.circular(14) : Radius.zero,
+          bottom: isLast ? const Radius.circular(14) : Radius.zero,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              Expanded(
-                child: Text(
-                  language,
-                  style: AppTextStyles.body.copyWith(
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                  ),
-                ),
+              Icon(icon, size: 20, color: AppColors.primary),
+              const SizedBox(width: 14),
+              Expanded(child: Text(title, style: AppTextStyles.bodyMedium)),
+              if (trailing != null)
+                Text(trailing, style: AppTextStyles.caption),
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textMuted,
+                size: 20,
               ),
-              if (isSelected)
-                const Icon(
-                  Icons.check_circle_rounded,
-                  color: AppColors.primary,
-                  size: 22,
-                ),
             ],
           ),
         ),
@@ -470,47 +295,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showLogoutConfirmation() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: AppColors.card,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Text('Logout', style: AppTextStyles.h3),
-          content: Text(
-            'Are you sure you want to logout?',
-            style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+  // ── Logout ────────────────────────────────────────────────────────────
+  Widget _buildLogoutButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: OutlinedButton.icon(
+          onPressed: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              (route) => false,
+            );
+          },
+          icon: const Icon(Icons.logout_rounded, size: 20),
+          label: const Text('Sign Out'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.error,
+            side: const BorderSide(color: AppColors.error),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Cancel',
-                style: AppTextStyles.buttonSmall.copyWith(color: AppColors.textSecondary),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Perform logout
-              },
-              child: Text(
-                'Logout',
-                style: AppTextStyles.buttonSmall.copyWith(color: AppColors.error),
-              ),
-            ),
-          ],
-        );
-      },
+        ),
+      ),
     );
   }
 }
 
-class _InfoRowData {
+class _InfoRow {
   final IconData icon;
   final String label;
   final String value;
 
-  const _InfoRowData(this.icon, this.label, this.value);
+  const _InfoRow(this.icon, this.label, this.value);
 }

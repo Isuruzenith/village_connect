@@ -5,331 +5,379 @@ import '../../../core/theme/app_text_styles.dart';
 class NoticeDetailScreen extends StatelessWidget {
   final Map<String, String> notice;
 
-  const NoticeDetailScreen({
-    super.key,
-    required this.notice,
-  });
+  const NoticeDetailScreen({super.key, required this.notice});
 
   Color _categoryColor(String category) {
     switch (category) {
       case 'General':
-        return AppColors.accentBlue;
-      case 'Health':
-        return AppColors.accentGreen;
-      case 'Emergency':
-        return AppColors.accentRed;
-      case 'Event':
-        return AppColors.accentYellow;
-      default:
-        return AppColors.accentBlue;
-    }
-  }
-
-  Color _categoryTextColor(String category) {
-    switch (category) {
-      case 'General':
-        return AppColors.info;
+        return AppColors.primary;
       case 'Health':
         return AppColors.success;
       case 'Emergency':
         return AppColors.error;
-      case 'Event':
-        return AppColors.warning;
-      default:
+      case 'Development':
         return AppColors.info;
+      default:
+        return AppColors.primary;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final String title = notice['title'] ?? '';
+    final String title = notice['title'] ?? 'Notice Details';
     final String category = notice['category'] ?? 'General';
-    final String date = notice['date'] ?? '';
-    final String content = notice['content'] ?? notice['description'] ?? '';
+    final String date = notice['date'] ?? 'Just now';
+    final String content =
+        notice['content'] ?? notice['description'] ?? 'No details provided.';
     final bool hasAttachment = notice['hasAttachment'] == 'true';
+    final catColor = _categoryColor(category);
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.textOnPrimary,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => Navigator.of(context).pop(),
-          tooltip: 'Back',
-        ),
-        title: const Text(
-          'Notice Details',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: AppColors.card,
+            foregroundColor: AppColors.textPrimary,
+            elevation: 0,
+            pinned: true,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: IconButton(
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceGrey.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: AppColors.textPrimary,
+                    size: 20,
+                  ),
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                tooltip: 'Back',
+              ),
+            ),
+            title: Text(
+              'Notice Details',
+              style: AppTextStyles.h3.copyWith(fontWeight: FontWeight.w700),
+            ),
+            centerTitle: true,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(1),
+              child: Container(
+                color: AppColors.border.withOpacity(0.3),
+                height: 1,
+              ),
+            ),
           ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Verified badge and official label
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.accentBlue,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+          SliverToBoxAdapter(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: const BoxDecoration(
-                      color: AppColors.info,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check_rounded,
-                      size: 16,
-                      color: AppColors.textOnPrimary,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Official Announcement',
-                    style: AppTextStyles.captionMedium.copyWith(
-                      color: AppColors.info,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Category chip
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: _categoryColor(category),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                category,
-                style: AppTextStyles.small.copyWith(
-                  color: _categoryTextColor(category),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Title
-            Text(
-              title,
-              style: AppTextStyles.h2.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Date and author
-            Row(
-              children: [
-                Icon(
-                  Icons.calendar_today_rounded,
-                  size: 16,
-                  color: AppColors.textMuted,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  date,
-                  style: AppTextStyles.caption,
-                ),
-                const SizedBox(width: 16),
-                Icon(
-                  Icons.person_outline_rounded,
-                  size: 16,
-                  color: AppColors.textMuted,
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    'By: Grama Niladhari Office, Kaduwela',
-                    style: AppTextStyles.caption,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Divider
-            const Divider(color: AppColors.divider, thickness: 1),
-            const SizedBox(height: 16),
-
-            // Full content
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.card,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Text(
-                content,
-                style: AppTextStyles.body.copyWith(
-                  height: 1.7,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Attachment card
-            if (hasAttachment) ...[
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.card,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppColors.accentPurple,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        Icons.description_outlined,
-                        color: Color(0xFF7C3AED),
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Attached Document',
-                            style: AppTextStyles.bodyMedium,
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: catColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          category,
+                          style: AppTextStyles.small.copyWith(
+                            color: catColor,
+                            fontWeight: FontWeight.w700,
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'PDF Document',
-                            style: AppTextStyles.caption,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.verified_rounded,
+                              size: 14,
+                              color: AppColors.primary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Official Announcement',
+                              style: AppTextStyles.small.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  Text(
+                    title,
+                    style: AppTextStyles.h1.copyWith(
+                      fontWeight: FontWeight.w800,
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceGrey.withOpacity(0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.calendar_month_rounded,
+                          size: 18,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        date,
+                        style: AppTextStyles.caption.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+
+                      const SizedBox(width: 20),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceGrey.withOpacity(0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.person_rounded,
+                          size: 18,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'GN Office, Kaduwela',
+                          style: AppTextStyles.caption.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: AppColors.card,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: AppColors.border.withOpacity(0.4),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.shadowLight.withOpacity(0.03),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      content,
+                      style: AppTextStyles.body.copyWith(
+                        height: 1.7,
+                        color: AppColors.textPrimary.withOpacity(0.9),
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  if (hasAttachment) ...[
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColors.card,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.border.withOpacity(0.5),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.shadowLight.withOpacity(0.03),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.download_rounded,
-                          color: AppColors.primary,
-                        ),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Download started...'),
-                              behavior: SnackBarBehavior.floating,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Downloading attachment...'),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(20),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 56,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.info.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: const Icon(
+                                    Icons.picture_as_pdf_rounded,
+                                    color: AppColors.info,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Attached Document',
+                                        style: AppTextStyles.bodyMedium
+                                            .copyWith(
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Official_Notice.pdf (1.2 MB)',
+                                        style: AppTextStyles.caption.copyWith(
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.info.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.download_rounded,
+                                    color: AppColors.info,
+                                    size: 20,
+                                  ),
+                                ),
+                              ],
                             ),
-                          );
-                        },
-                        tooltip: 'Download document',
+                          ),
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 32),
                   ],
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
 
-            // Action buttons
-            const Divider(color: AppColors.divider, thickness: 1),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 48,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Share options opened'),
-                            behavior: SnackBarBehavior.floating,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Share options opened'),
+                              ),
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            side: BorderSide(
+                              color: AppColors.primary.withOpacity(0.5),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.share_outlined,
-                        color: AppColors.primary,
-                        size: 20,
-                      ),
-                      label: Text(
-                        'Share',
-                        style: AppTextStyles.captionMedium.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
+                          icon: const Icon(
+                            Icons.share_rounded,
+                            size: 20,
+                            color: AppColors.primary,
+                          ),
+                          label: Text(
+                            'Share',
+                            style: AppTextStyles.button.copyWith(
+                              color: AppColors.primary,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 1,
-                  height: 24,
-                  color: AppColors.divider,
-                ),
-                Expanded(
-                  child: SizedBox(
-                    height: 48,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Report submitted'),
-                            behavior: SnackBarBehavior.floating,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Report submitted')),
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            side: BorderSide(
+                              color: AppColors.error.withOpacity(0.3),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            backgroundColor: AppColors.error.withOpacity(0.02),
                           ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.flag_outlined,
-                        color: AppColors.error,
-                        size: 20,
-                      ),
-                      label: Text(
-                        'Report Issue',
-                        style: AppTextStyles.captionMedium.copyWith(
-                          color: AppColors.error,
-                          fontWeight: FontWeight.w600,
+                          icon: const Icon(
+                            Icons.flag_rounded,
+                            size: 20,
+                            color: AppColors.error,
+                          ),
+                          label: Text(
+                            'Report',
+                            style: AppTextStyles.button.copyWith(
+                              color: AppColors.error,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 32),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
