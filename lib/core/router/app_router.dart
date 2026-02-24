@@ -17,6 +17,7 @@ import '../../features/home/screens/citizen_home_screen.dart';
 import '../../features/notices/screens/notice_board_screen.dart';
 import '../../features/notices/screens/notice_detail_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
+import '../../features/official/screens/mass_broadcast_screen.dart';
 import '../../features/official/screens/official_dashboard_screen.dart';
 import '../../features/official/screens/pending_requests_screen.dart';
 import '../../features/official/screens/post_notice_screen.dart';
@@ -158,6 +159,11 @@ final appRouter = GoRouter(
       path: '/official/post-notice',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const PostNoticeScreen(),
+    ),
+    GoRoute(
+      path: '/official/broadcast',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const MassBroadcastScreen(),
     ),
     GoRoute(
       path: '/profile',
