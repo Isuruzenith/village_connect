@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/services/auth_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -56,9 +58,15 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
+    // Navigate after animation and check auth state
     Future.delayed(const Duration(milliseconds: 2800), () {
       if (mounted) {
-        context.go('/auth/language');
+        final user = ref.read(authServiceProvider).currentUser;
+        if (user != null) {
+          context.go('/home');
+        } else {
+          context.go('/auth/language');
+        }
       }
     });
   }

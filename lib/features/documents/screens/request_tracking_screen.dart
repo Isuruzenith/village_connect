@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import '../../../core/models/request_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../repositories/document_repository.dart';
 
-class RequestTrackingScreen extends StatefulWidget {
+class RequestTrackingScreen extends ConsumerStatefulWidget {
   const RequestTrackingScreen({super.key});
 
   @override
-  State<RequestTrackingScreen> createState() => _RequestTrackingScreenState();
+  ConsumerState<RequestTrackingScreen> createState() => _RequestTrackingScreenState();
 }
 
-class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
+class _RequestTrackingScreenState extends ConsumerState<RequestTrackingScreen> {
   String _selectedFilter = 'All';
 
   final List<String> _filters = [
@@ -22,56 +26,15 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
     'Rejected',
   ];
 
-  final List<_RequestItem> _requests = [
-    _RequestItem(
-      trackingId: 'CC-2026-0142',
-      documentType: 'Character Certificate',
-      status: 'Approved',
-      date: '22 Feb 2026',
-      statusColor: AppColors.success,
-      icon: Icons.verified_user_rounded,
-    ),
-    _RequestItem(
-      trackingId: 'RC-2026-0088',
-      documentType: 'Residence Certificate',
-      status: 'In Review',
-      date: '20 Feb 2026',
-      statusColor: AppColors.info,
-      icon: Icons.home_rounded,
-    ),
-    _RequestItem(
-      trackingId: 'IC-2026-0055',
-      documentType: 'Income Certificate',
-      status: 'Pending',
-      date: '18 Feb 2026',
-      statusColor: AppColors.warning,
-      icon: Icons.account_balance_wallet_rounded,
-    ),
-    _RequestItem(
-      trackingId: 'CC-2026-0099',
-      documentType: 'Character Certificate',
-      status: 'Rejected',
-      date: '10 Feb 2026',
-      statusColor: AppColors.error,
-      icon: Icons.verified_user_rounded,
-    ),
-    _RequestItem(
-      trackingId: 'RC-2026-0067',
-      documentType: 'Residence Certificate',
-      status: 'Approved',
-      date: '05 Feb 2026',
-      statusColor: AppColors.success,
-      icon: Icons.home_rounded,
-    ),
-  ];
-
-  List<_RequestItem> get _filteredRequests {
-    if (_selectedFilter == 'All') return _requests;
-    return _requests.where((r) => r.status == _selectedFilter).toList();
+  List<RequestModel> _filterRequests(List<RequestModel> requests) {
+    if (_selectedFilter == 'All') return requests;
+    return requests.where((r) => r.status == _selectedFilter).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final requestsAsync = ref.watch(userRequestsProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -121,72 +84,73 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          _buildFilterChips(),
+          SizedBox(
+            height: 44,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              itemCount: _filters.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 10),
+              itemBuilder: (context, index) {
+                final filter = _filters[index];
+                final isSelected = _selectedFilter == filter;
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedFilter = filter),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOutCubic,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : AppColors.card,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: AppColors.primary.withOpacity(0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ]
+                          : [
+                              BoxShadow(
+                                color: AppColors.shadowLight.withOpacity(0.04),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.border.withOpacity(0.5),
+                      ),
+                    ),
+                    child: Text(
+                      filter,
+                      style: AppTextStyles.captionMedium.copyWith(
+                        color: isSelected ? Colors.white : AppColors.textSecondary,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
           const SizedBox(height: 16),
-          Expanded(child: _buildRequestList()),
+          Expanded(
+            child: requestsAsync.when(
+              data: (requests) => _buildRequestList(_filterRequests(requests)),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Error: $err')),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildFilterChips() {
-    return SizedBox(
-      height: 44,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        itemCount: _filters.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 10),
-        itemBuilder: (context, index) {
-          final filter = _filters[index];
-          final isSelected = _selectedFilter == filter;
-          return GestureDetector(
-            onTap: () => setState(() => _selectedFilter = filter),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : AppColors.card,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ]
-                    : [
-                        BoxShadow(
-                          color: AppColors.shadowLight.withOpacity(0.04),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                border: Border.all(
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.border.withOpacity(0.5),
-                ),
-              ),
-              child: Text(
-                filter,
-                style: AppTextStyles.captionMedium.copyWith(
-                  color: isSelected ? Colors.white : AppColors.textSecondary,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildRequestList() {
-    final filtered = _filteredRequests;
+  Widget _buildRequestList(List<RequestModel> filtered) {
     if (filtered.isEmpty) {
       return Center(
         child: Column(
@@ -242,7 +206,10 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
     );
   }
 
-  Widget _buildRequestCard(_RequestItem request) {
+  Widget _buildRequestCard(RequestModel request) {
+    final statusColor = _getStatusColor(request.status);
+    final icon = _getStatusIcon(request.status);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -250,7 +217,7 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
           context.push(
             '/documents/detail',
             extra: {
-              'trackingId': request.trackingId,
+              'trackingId': request.id,
               'documentType': request.documentType,
               'status': request.status,
             },
@@ -278,10 +245,10 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: request.statusColor.withOpacity(0.12),
+                  color: statusColor.withOpacity(0.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(request.icon, color: request.statusColor, size: 28),
+                child: Icon(icon, color: statusColor, size: 28),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -298,7 +265,7 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
                     Row(
                       children: [
                         Text(
-                          request.trackingId,
+                          request.id.isNotEmpty ? request.id.substring(0, 8) : '...',
                           style: AppTextStyles.small.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w600,
@@ -312,7 +279,7 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          request.date,
+                          DateFormat.yMMMd().format(request.submittedAt),
                           style: AppTextStyles.small.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -332,13 +299,13 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: request.statusColor.withOpacity(0.1),
+                      color: statusColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       request.status,
                       style: AppTextStyles.caption.copyWith(
-                        color: request.statusColor,
+                        color: statusColor,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -351,22 +318,34 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
       ),
     );
   }
-}
 
-class _RequestItem {
-  final String trackingId;
-  final String documentType;
-  final String status;
-  final String date;
-  final Color statusColor;
-  final IconData icon;
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Approved':
+        return AppColors.success;
+      case 'Pending':
+        return AppColors.warning;
+      case 'In Review':
+        return AppColors.info;
+      case 'Rejected':
+        return AppColors.error;
+      default:
+        return AppColors.textSecondary;
+    }
+  }
 
-  const _RequestItem({
-    required this.trackingId,
-    required this.documentType,
-    required this.status,
-    required this.date,
-    required this.statusColor,
-    required this.icon,
-  });
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'Approved':
+        return Icons.check_circle_rounded;
+      case 'Pending':
+        return Icons.access_time_filled_rounded;
+      case 'In Review':
+        return Icons.rate_review_rounded;
+      case 'Rejected':
+        return Icons.cancel_rounded;
+      default:
+        return Icons.help_rounded;
+    }
+  }
 }
