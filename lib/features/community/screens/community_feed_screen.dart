@@ -117,7 +117,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
           indicatorColor: AppColors.textOnPrimary,
           indicatorWeight: 3,
           labelColor: AppColors.textOnPrimary,
-          unselectedLabelColor: AppColors.textOnPrimary.withValues(alpha: 0.6),
+          unselectedLabelColor: AppColors.textOnPrimary.withOpacity(0.6),
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
@@ -193,13 +193,13 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
                       Icon(
                         Icons.camera_alt_outlined,
                         size: 36,
-                        color: AppColors.textMuted.withValues(alpha: 0.5),
+                        color: AppColors.textMuted.withOpacity(0.5),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'No photo',
                         style: AppTextStyles.small.copyWith(
-                          color: AppColors.textMuted.withValues(alpha: 0.6),
+                          color: AppColors.textMuted.withOpacity(0.6),
                         ),
                       ),
                     ],

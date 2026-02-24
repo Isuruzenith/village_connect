@@ -517,7 +517,7 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  color: actionColor.withValues(alpha: 0.1),
+                  color: actionColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(actionIcon, color: actionColor, size: 32),

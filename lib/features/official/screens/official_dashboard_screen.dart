@@ -90,7 +90,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
                 Text(
                   'Welcome, Officer',
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textOnPrimary.withValues(alpha: 0.8),
+                    color: AppColors.textOnPrimary.withOpacity(0.8),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -108,7 +108,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: AppColors.textOnPrimary.withValues(alpha: 0.2),
+              color: AppColors.textOnPrimary.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -157,7 +157,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
                 Text(
                   stat.label,
                   style: AppTextStyles.captionMedium.copyWith(
-                    color: stat.textColor.withValues(alpha: 0.8),
+                    color: stat.textColor.withOpacity(0.8),
                   ),
                 ),
               ],

@@ -186,7 +186,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen> {
             Icon(
               Icons.inbox_outlined,
               size: 56,
-              color: AppColors.textMuted.withValues(alpha: 0.5),
+              color: AppColors.textMuted.withOpacity(0.5),
             ),
             const SizedBox(height: 12),
             Text(

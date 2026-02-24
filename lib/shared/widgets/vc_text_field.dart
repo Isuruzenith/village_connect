@@ -5,6 +5,7 @@ import '../../core/theme/app_text_styles.dart';
 class VcTextField extends StatelessWidget {
   final String label;
   final String? hint;
+  final String? description;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
@@ -21,6 +22,7 @@ class VcTextField extends StatelessWidget {
     super.key,
     required this.label,
     this.hint,
+    this.description,
     this.controller,
     this.validator,
     this.keyboardType,
@@ -39,8 +41,10 @@ class VcTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTextStyles.label),
-        const SizedBox(height: 6),
+        if (label.isNotEmpty) ...[
+          Text(label, style: AppTextStyles.label),
+          const SizedBox(height: 6),
+        ],
         TextFormField(
           controller: controller,
           validator: validator,
@@ -51,15 +55,23 @@ class VcTextField extends StatelessWidget {
           onTap: onTap,
           onChanged: onChanged,
           enabled: enabled,
-          style: AppTextStyles.body,
+          style: AppTextStyles.body.copyWith(
+            fontSize: 14, // Slightly smaller text for input
+          ),
+          cursorColor: AppColors.primary,
           decoration: InputDecoration(
             hintText: hint,
             prefixIcon: prefixIcon != null
-                ? Icon(prefixIcon, color: AppColors.textMuted, size: 22)
+                ? Icon(prefixIcon, color: AppColors.textMuted, size: 18)
                 : null,
             suffixIcon: suffixIcon,
+            isDense: true, // Make input more compact
           ),
         ),
+        if (description != null) ...[
+          const SizedBox(height: 6),
+          Text(description!, style: AppTextStyles.caption),
+        ],
       ],
     );
   }
@@ -68,6 +80,7 @@ class VcTextField extends StatelessWidget {
 class VcDropdownField extends StatelessWidget {
   final String label;
   final String? hint;
+  final String? description;
   final String? value;
   final List<String> items;
   final ValueChanged<String?>? onChanged;
@@ -77,6 +90,7 @@ class VcDropdownField extends StatelessWidget {
     super.key,
     required this.label,
     this.hint,
+    this.description,
     this.value,
     required this.items,
     this.onChanged,
@@ -88,19 +102,25 @@ class VcDropdownField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTextStyles.label),
-        const SizedBox(height: 6),
+        if (label.isNotEmpty) ...[
+          Text(label, style: AppTextStyles.label),
+          const SizedBox(height: 6),
+        ],
         DropdownButtonFormField<String>(
           initialValue: value,
           hint: hint != null ? Text(hint!, style: AppTextStyles.caption) : null,
           validator: validator,
           onChanged: onChanged,
-          style: AppTextStyles.body,
+          style: AppTextStyles.body.copyWith(fontSize: 14),
           icon: const Icon(
             Icons.keyboard_arrow_down_rounded,
             color: AppColors.textMuted,
+            size: 20,
           ),
-          decoration: const InputDecoration(),
+          decoration: const InputDecoration(
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          ),
           items: items
               .map(
                 (item) =>
@@ -108,6 +128,10 @@ class VcDropdownField extends StatelessWidget {
               )
               .toList(),
         ),
+        if (description != null) ...[
+          const SizedBox(height: 6),
+          Text(description!, style: AppTextStyles.caption),
+        ],
       ],
     );
   }

@@ -177,7 +177,7 @@ class _LanguageSelectorScreenState extends State<LanguageSelectorScreen> {
               width: isSelected ? 2 : 1,
             ),
             color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.04)
+                ? AppColors.primary.withOpacity(0.04)
                 : AppColors.card,
           ),
           child: Row(
