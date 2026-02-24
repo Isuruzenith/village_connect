@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import '../../../core/models/request_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../repositories/document_repository.dart';
 
-class RequestDetailScreen extends StatelessWidget {
+class RequestDetailScreen extends ConsumerWidget {
   final String trackingId;
   final String documentType;
   final String status;
@@ -15,27 +19,27 @@ class RequestDetailScreen extends StatelessWidget {
     required this.status,
   });
 
-  Map<String, String> get _applicationDetails => {
-    'Document Type': documentType,
-    'Full Name': 'Kumara Bandara Dissanayake',
-    'NIC Number': '199512345678',
-    'Address': '42/A, Temple Road, Kadawatha, Gampaha District',
-    'Reason':
-        'Required for employment verification at a government institution',
-    'Submitted Date': '22 Feb 2026',
-  };
+  Map<String, String> _getApplicationDetails(RequestModel request) => {
+        'Document Type': request.documentType,
+        'Full Name': request.fullName,
+        'NIC Number': request.nic,
+        'Address': request.address,
+        'Reason': request.reason,
+        'Submitted Date': DateFormat.yMMMd().format(request.submittedAt),
+      };
 
-  String get _gnRemarks {
-    if (status == 'Approved') {
+  String _getGnRemarks(RequestModel request) {
+    if (request.status == 'Approved') {
       return 'All documents verified. The applicant has been residing in this area for over 15 years. Character is satisfactory.';
     }
-    if (status == 'Rejected') {
-      return 'The NIC copy provided is not legible. Please resubmit with a clear copy of the NIC (front and back).';
+    if (request.status == 'Rejected') {
+      return request.rejectionReason ??
+          'The NIC copy provided is not legible. Please resubmit with a clear copy of the NIC (front and back).';
     }
     return '';
   }
 
-  Color get _statusColor {
+  Color _getStatusColor(String status) {
     switch (status) {
       case 'Approved':
         return AppColors.success;
@@ -48,7 +52,7 @@ class RequestDetailScreen extends StatelessWidget {
     }
   }
 
-  IconData get _statusIcon {
+  IconData _getStatusIcon(String status) {
     switch (status) {
       case 'Approved':
         return Icons.check_circle_rounded;
@@ -62,7 +66,9 @@ class RequestDetailScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final requestAsync = ref.watch(requestDetailProvider(trackingId));
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -79,44 +85,55 @@ class RequestDetailScreen extends StatelessWidget {
         title: Text('Request Details', style: AppTextStyles.h3),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Divider(height: 1, color: AppColors.divider),
-            _buildStatusHeader(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTimeline(),
-                  const SizedBox(height: 24),
-                  _buildDetailsCard(),
-                  if (_gnRemarks.isNotEmpty) ...[
-                    const SizedBox(height: 20),
-                    _buildRemarksCard(),
-                  ],
-                  const SizedBox(height: 24),
-                  _buildActionButtons(context),
-                ],
-              ),
+      body: requestAsync.when(
+        data: (request) {
+          if (request == null) {
+            return const Center(child: Text('Request not found'));
+          }
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                const Divider(height: 1, color: AppColors.divider),
+                _buildStatusHeader(request),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTimeline(request),
+                      const SizedBox(height: 24),
+                      _buildDetailsCard(request),
+                      if (_getGnRemarks(request).isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        _buildRemarksCard(request),
+                      ],
+                      const SizedBox(height: 24),
+                      _buildActionButtons(context, request),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error: $err')),
       ),
     );
   }
 
   // ── Status Header ─────────────────────────────────────────────────────
-  Widget _buildStatusHeader() {
+  Widget _buildStatusHeader(RequestModel request) {
+    final color = _getStatusColor(request.status);
+    final icon = _getStatusIcon(request.status);
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.all(24),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _statusColor.withOpacity(0.08),
+        color: color.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _statusColor.withOpacity(0.2)),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Row(
         children: [
@@ -124,10 +141,10 @@ class RequestDetailScreen extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: _statusColor.withOpacity(0.12),
+              color: color.withOpacity(0.12),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(_statusIcon, color: _statusColor, size: 28),
+            child: Icon(icon, color: color, size: 28),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -135,12 +152,12 @@ class RequestDetailScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  status,
-                  style: AppTextStyles.h3.copyWith(color: _statusColor),
+                  request.status,
+                  style: AppTextStyles.h3.copyWith(color: color),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  trackingId,
+                  request.id.isNotEmpty ? request.id.substring(0, 8) : '...',
                   style: AppTextStyles.caption.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
@@ -154,25 +171,33 @@ class RequestDetailScreen extends StatelessWidget {
   }
 
   // ── Timeline ──────────────────────────────────────────────────────────
-  Widget _buildTimeline() {
+  Widget _buildTimeline(RequestModel request) {
     final steps = [
-      _TimelineStep('Application Submitted', '22 Feb 2026, 10:30 AM', true),
+      _TimelineStep(
+        'Application Submitted',
+        DateFormat.yMMMd().add_jm().format(request.submittedAt),
+        true,
+      ),
       _TimelineStep(
         'Under Review',
-        '23 Feb 2026, 9:00 AM',
-        status != 'Pending',
+        request.status != 'Pending' ? 'In Progress' : 'Pending',
+        request.status != 'Pending',
       ),
       _TimelineStep(
         'GN Verification',
-        '24 Feb 2026, 2:00 PM',
-        status == 'Approved' || status == 'Rejected',
+        request.status == 'Approved' || request.status == 'Rejected'
+            ? 'Completed'
+            : 'Pending',
+        request.status == 'Approved' || request.status == 'Rejected',
       ),
       _TimelineStep(
-        status == 'Rejected' ? 'Application Rejected' : 'Ready for Collection',
-        status == 'Approved' || status == 'Rejected'
-            ? '24 Feb 2026, 4:30 PM'
+        request.status == 'Rejected'
+            ? 'Application Rejected'
+            : 'Ready for Collection',
+        request.status == 'Approved' || request.status == 'Rejected'
+            ? 'Completed'
             : 'Pending',
-        status == 'Approved' || status == 'Rejected',
+        request.status == 'Approved' || request.status == 'Rejected',
       ),
     ];
 
@@ -185,6 +210,8 @@ class RequestDetailScreen extends StatelessWidget {
           final index = entry.key;
           final step = entry.value;
           final isLast = index == steps.length - 1;
+          final color = _getStatusColor(request.status);
+
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -195,7 +222,7 @@ class RequestDetailScreen extends StatelessWidget {
                     height: 24,
                     decoration: BoxDecoration(
                       color: step.isCompleted
-                          ? _statusColor
+                          ? color
                           : AppColors.disabledBackground,
                       shape: BoxShape.circle,
                     ),
@@ -221,7 +248,7 @@ class RequestDetailScreen extends StatelessWidget {
                       width: 2,
                       height: 40,
                       color: step.isCompleted
-                          ? _statusColor.withOpacity(0.3)
+                          ? color.withOpacity(0.3)
                           : AppColors.disabledBackground,
                     ),
                 ],
@@ -262,7 +289,8 @@ class RequestDetailScreen extends StatelessWidget {
   }
 
   // ── Details card ──────────────────────────────────────────────────────
-  Widget _buildDetailsCard() {
+  Widget _buildDetailsCard(RequestModel request) {
+    final details = _getApplicationDetails(request);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -282,8 +310,8 @@ class RequestDetailScreen extends StatelessWidget {
             ],
           ),
           child: Column(
-            children: _applicationDetails.entries.map((entry) {
-              final isLast = entry.key == _applicationDetails.keys.last;
+            children: details.entries.map((entry) {
+              final isLast = entry.key == details.keys.last;
               return Column(
                 children: [
                   Padding(
@@ -316,8 +344,8 @@ class RequestDetailScreen extends StatelessWidget {
   }
 
   // ── Remarks card ──────────────────────────────────────────────────────
-  Widget _buildRemarksCard() {
-    final isRejected = status == 'Rejected';
+  Widget _buildRemarksCard(RequestModel request) {
+    final isRejected = request.status == 'Rejected';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -347,7 +375,7 @@ class RequestDetailScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  _gnRemarks,
+                  _getGnRemarks(request),
                   style: AppTextStyles.caption.copyWith(
                     color: AppColors.textPrimary,
                     height: 1.6,
@@ -362,8 +390,8 @@ class RequestDetailScreen extends StatelessWidget {
   }
 
   // ── Action buttons ────────────────────────────────────────────────────
-  Widget _buildActionButtons(BuildContext context) {
-    if (status == 'Rejected') {
+  Widget _buildActionButtons(BuildContext context, RequestModel request) {
+    if (request.status == 'Rejected') {
       return SizedBox(
         width: double.infinity,
         height: 52,

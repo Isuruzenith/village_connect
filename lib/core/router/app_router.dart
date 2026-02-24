@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -29,6 +31,27 @@ final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>()
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/splash',
+  refreshListenable: GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges()),
+  redirect: (context, state) {
+    final isLoggedIn = FirebaseAuth.instance.currentUser != null;
+    final path = state.uri.path;
+
+    // Allow splash, login, register, language
+    if (path == '/splash' || path.startsWith('/auth')) {
+      if (isLoggedIn && path != '/auth/register') {
+         // If logged in and trying to access auth pages (except register maybe?), go home
+         // Actually, if we are in splash, we should go home if logged in.
+         return '/home';
+      }
+      return null;
+    }
+
+    if (!isLoggedIn) {
+      return '/auth/login';
+    }
+
+    return null;
+  },
   routes: [
     GoRoute(
       path: '/splash',
@@ -174,3 +197,20 @@ final appRouter = GoRouter(
     ),
   ],
 );
+
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.listen(
+      (dynamic _) => notifyListeners(),
+    );
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}

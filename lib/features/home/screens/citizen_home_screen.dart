@@ -1,29 +1,38 @@
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import '../../../core/models/request_model.dart';
+import '../../../core/services/auth_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../documents/repositories/document_repository.dart';
 
-class CitizenHomeScreen extends StatelessWidget {
+class CitizenHomeScreen extends ConsumerWidget {
   const CitizenHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authServiceProvider).currentUser;
+    final requestsAsyncValue = ref.watch(userRequestsProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeroGreeting(context),
+            _buildHeroGreeting(context, user),
             const SizedBox(height: 24),
-            _buildQuickStats(),
+            _buildQuickStats(requestsAsyncValue),
             const SizedBox(height: 32),
             _buildPrimaryActions(context),
             const SizedBox(height: 32),
             _buildSecondaryActions(context),
             const SizedBox(height: 32),
-            _buildRecentActivity(),
+            _buildRecentActivity(context, requestsAsyncValue),
             const SizedBox(height: 48),
           ],
         ),
@@ -32,7 +41,7 @@ class CitizenHomeScreen extends StatelessWidget {
   }
 
   // ── Hero Greeting ─────────────────────────────────────────────────────
-  Widget _buildHeroGreeting(BuildContext context) {
+  Widget _buildHeroGreeting(BuildContext context, User? user) {
     final topPadding = MediaQuery.of(context).padding.top;
     return Container(
       width: double.infinity,
@@ -72,7 +81,7 @@ class CitizenHomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Kamal Perera',
+                      user?.displayName ?? 'Citizen',
                       style: AppTextStyles.displayLarge.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
@@ -97,8 +106,10 @@ class CitizenHomeScreen extends StatelessWidget {
                         color: Colors.white.withOpacity(0.8),
                         width: 2,
                       ),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/default_avatar.jpg'),
+                      image: DecorationImage(
+                        image: user?.photoURL != null
+                            ? NetworkImage(user!.photoURL!) as ImageProvider
+                            : const AssetImage('assets/images/default_avatar.jpg'),
                         fit: BoxFit.cover,
                       ),
                       boxShadow: [
@@ -159,35 +170,45 @@ class CitizenHomeScreen extends StatelessWidget {
   }
 
   // ── Quick Stats ───────────────────────────────────────────────────────
-  Widget _buildQuickStats() {
+  Widget _buildQuickStats(AsyncValue<List<RequestModel>> requestsValue) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
-        children: [
-          _buildStatChip(
-            icon: Icons.access_time_filled_rounded,
-            value: '2',
-            label: 'Pending',
-            color: AppColors.warning,
-            bgColor: AppColors.warningLight,
-          ),
-          const SizedBox(width: 16),
-          _buildStatChip(
-            icon: Icons.check_circle_rounded,
-            value: '5',
-            label: 'Approved',
-            color: AppColors.success,
-            bgColor: AppColors.successLight,
-          ),
-          const SizedBox(width: 16),
-          _buildStatChip(
-            icon: Icons.insert_drive_file_rounded,
-            value: '8',
-            label: 'Total',
-            color: AppColors.primary,
-            bgColor: AppColors.primaryLight,
-          ),
-        ],
+      child: requestsValue.when(
+        data: (requests) {
+          final pendingCount = requests.where((r) => r.status == 'Pending').length;
+          final approvedCount = requests.where((r) => r.status == 'Approved').length;
+          final totalCount = requests.length;
+
+          return Row(
+            children: [
+              _buildStatChip(
+                icon: Icons.access_time_filled_rounded,
+                value: '$pendingCount',
+                label: 'Pending',
+                color: AppColors.warning,
+                bgColor: AppColors.warningLight,
+              ),
+              const SizedBox(width: 16),
+              _buildStatChip(
+                icon: Icons.check_circle_rounded,
+                value: '$approvedCount',
+                label: 'Approved',
+                color: AppColors.success,
+                bgColor: AppColors.successLight,
+              ),
+              const SizedBox(width: 16),
+              _buildStatChip(
+                icon: Icons.insert_drive_file_rounded,
+                value: '$totalCount',
+                label: 'Total',
+                color: AppColors.primary,
+                bgColor: AppColors.primaryLight,
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error loading stats: $err')),
       ),
     );
   }
@@ -430,7 +451,7 @@ class CitizenHomeScreen extends StatelessWidget {
                   title: 'Notice Board',
                   subtitle: 'Official announcements',
                   color: AppColors.primary,
-                  onTap: () {},
+                  onTap: () => context.push('/notices'),
                 ),
                 const Divider(height: 1, indent: 72, color: AppColors.divider),
                 _buildSecondaryItem(
@@ -438,7 +459,7 @@ class CitizenHomeScreen extends StatelessWidget {
                   title: 'Help & Support',
                   subtitle: 'FAQs and contact info',
                   color: AppColors.success,
-                  onTap: () {},
+                  onTap: () => context.push('/help'),
                   isLast: true,
                 ),
               ],
@@ -513,7 +534,7 @@ class CitizenHomeScreen extends StatelessWidget {
   }
 
   // ── Recent Activity ───────────────────────────────────────────────────
-  Widget _buildRecentActivity() {
+  Widget _buildRecentActivity(BuildContext context, AsyncValue<List<RequestModel>> requestsValue) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -526,11 +547,14 @@ class CitizenHomeScreen extends StatelessWidget {
                 'Recent Activity',
                 style: AppTextStyles.h3.copyWith(fontWeight: FontWeight.w700),
               ),
-              Text(
-                'View All',
-                style: AppTextStyles.small.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
+              GestureDetector(
+                onTap: () => context.push('/documents/tracking'),
+                child: Text(
+                  'View All',
+                  style: AppTextStyles.small.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -549,39 +573,84 @@ class CitizenHomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-            child: Column(
-              children: [
-                _buildActivityItem(
-                  title: 'Character Certificate',
-                  status: 'Approved',
-                  statusColor: AppColors.success,
-                  date: 'Feb 22, 2026',
-                  icon: Icons.check_circle_rounded,
-                  isFirst: true,
-                ),
-                const Divider(height: 1, indent: 64, color: AppColors.divider),
-                _buildActivityItem(
-                  title: 'Residence Certificate',
-                  status: 'In Review',
-                  statusColor: AppColors.info,
-                  date: 'Feb 20, 2026',
-                  icon: Icons.rate_review_rounded,
-                ),
-                const Divider(height: 1, indent: 64, color: AppColors.divider),
-                _buildActivityItem(
-                  title: 'Income Certificate',
-                  status: 'Pending',
-                  statusColor: AppColors.warning,
-                  date: 'Feb 18, 2026',
-                  icon: Icons.access_time_filled_rounded,
-                  isLast: true,
-                ),
-              ],
+            child: requestsValue.when(
+              data: (requests) {
+                if (requests.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Center(
+                      child: Text(
+                        'No recent activity',
+                        style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+                      ),
+                    ),
+                  );
+                }
+                final recentRequests = requests.take(3).toList();
+                return Column(
+                  children: [
+                    for (int i = 0; i < recentRequests.length; i++)
+                      Column(
+                        children: [
+                          _buildActivityItem(
+                            title: recentRequests[i].documentType,
+                            status: recentRequests[i].status,
+                            statusColor: _getStatusColor(recentRequests[i].status),
+                            date: DateFormat.yMMMd().format(recentRequests[i].submittedAt),
+                            icon: _getStatusIcon(recentRequests[i].status),
+                            isFirst: i == 0,
+                            isLast: i == recentRequests.length - 1,
+                          ),
+                          if (i < recentRequests.length - 1)
+                            const Divider(height: 1, indent: 64, color: AppColors.divider),
+                        ],
+                      ),
+                  ],
+                );
+              },
+              loading: () => const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (err, stack) => Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(child: Text('Error loading activity')),
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Approved':
+        return AppColors.success;
+      case 'Pending':
+        return AppColors.warning;
+      case 'In Review':
+        return AppColors.info;
+      case 'Rejected':
+        return AppColors.error;
+      default:
+        return AppColors.textSecondary;
+    }
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'Approved':
+        return Icons.check_circle_rounded;
+      case 'Pending':
+        return Icons.access_time_filled_rounded;
+      case 'In Review':
+        return Icons.rate_review_rounded;
+      case 'Rejected':
+        return Icons.cancel_rounded;
+      default:
+        return Icons.help_rounded;
+    }
   }
 
   Widget _buildActivityItem({
