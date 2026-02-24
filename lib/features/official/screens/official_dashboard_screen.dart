@@ -11,7 +11,10 @@ class OfficialDashboardScreen extends StatefulWidget {
       _OfficialDashboardScreenState();
 }
 
-class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
+class _OfficialDashboardScreenState extends State<OfficialDashboardScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
   final List<_StatCard> _stats = [
     _StatCard('Pending', '12', AppColors.accentYellow, AppColors.warning),
     _StatCard('In Review', '5', AppColors.accentBlue, AppColors.info),
@@ -40,33 +43,85 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
     ),
   ];
 
+  final List<_Incident> _incidents = [
+    _Incident(
+      title: 'Fallen Tree Blocking Road',
+      location: 'Main St, Kaduwela',
+      date: 'Today, 10:30 AM',
+      priority: 'High',
+      priorityColor: AppColors.error,
+    ),
+    _Incident(
+      title: 'Water Pipe Burst',
+      location: 'Temple Road',
+      date: 'Yesterday, 4:15 PM',
+      priority: 'Medium',
+      priorityColor: AppColors.warning,
+    ),
+    _Incident(
+      title: 'Street Lamp Malfunction',
+      location: '2nd Lane, Malabe',
+      date: '20 Feb 2026',
+      priority: 'Low',
+      priorityColor: AppColors.success,
+    ),
+    _Incident(
+      title: 'Garbage Collection Issue',
+      location: 'Housing Scheme',
+      date: '19 Feb 2026',
+      priority: 'Medium',
+      priorityColor: AppColors.warning,
+    ),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildAppBarArea(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    _buildStatsRow(),
-                    const SizedBox(height: 28),
-                    _buildQuickActions(),
-                    const SizedBox(height: 28),
-                    _buildRecentPendingRequests(),
-                    const SizedBox(height: 24),
-                  ],
-                ),
+        child: Column(
+          children: [
+            _buildAppBarArea(),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  // Tab 1: Overview
+                  SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 20),
+                          _buildStatsRow(),
+                          const SizedBox(height: 28),
+                          _buildQuickActions(),
+                          const SizedBox(height: 28),
+                          _buildRecentPendingRequests(),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Tab 2: Incidents
+                  _buildIncidentDashboard(),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -75,50 +130,74 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
   Widget _buildAppBarArea() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       decoration: const BoxDecoration(
         color: AppColors.primary,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Welcome, Officer',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textOnPrimary.withOpacity(0.8),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Nimal Fernando',
-                  style: AppTextStyles.h2.copyWith(
-                    color: AppColors.textOnPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppColors.textOnPrimary.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                'NF',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textOnPrimary,
-                  fontWeight: FontWeight.w600,
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome, Officer',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textOnPrimary.withOpacity(0.8),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Nimal Fernando',
+                      style: AppTextStyles.h2.copyWith(
+                        color: AppColors.textOnPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.textOnPrimary.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    'NF',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textOnPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          TabBar(
+            controller: _tabController,
+            indicatorColor: AppColors.textOnPrimary,
+            indicatorWeight: 3,
+            labelColor: AppColors.textOnPrimary,
+            unselectedLabelColor: AppColors.textOnPrimary.withOpacity(0.6),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
             ),
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
+            tabs: const [
+              Tab(text: 'Overview'),
+              Tab(text: 'Incidents'),
+            ],
           ),
         ],
       ),
@@ -192,11 +271,12 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
         ),
         const SizedBox(height: 10),
         _buildActionCard(
-          title: 'View Community',
-          icon: Icons.people_outline,
-          backgroundColor: AppColors.accentGreen,
+          title: 'Broadcast Message',
+          icon: Icons.cell_tower_rounded,
+          backgroundColor: AppColors.accentPurple,
           onTap: () {
-            context.push('/community');
+            // Will implement broadcast screen navigation in next step
+            context.push('/official/broadcast');
           },
         ),
       ],
@@ -354,6 +434,125 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
       ),
     );
   }
+
+  Widget _buildIncidentDashboard() {
+    return ListView.separated(
+      padding: const EdgeInsets.all(20),
+      itemCount: _incidents.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final incident = _incidents[index];
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: incident.priorityColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${incident.priority} Priority',
+                      style: AppTextStyles.small.copyWith(
+                        color: incident.priorityColor,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    Icons.more_horiz_rounded,
+                    color: AppColors.textMuted,
+                    size: 20,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                incident.title,
+                style: AppTextStyles.bodySemiBold,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 14,
+                    color: AppColors.textMuted,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      incident.location,
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Icon(
+                    Icons.access_time_rounded,
+                    size: 14,
+                    color: AppColors.textMuted,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    incident.date,
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 44,
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('View Incident Details'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    side: const BorderSide(color: AppColors.border),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text('View Details', style: AppTextStyles.buttonSmall),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _StatCard {
@@ -376,5 +575,21 @@ class _PendingRequest {
     required this.documentType,
     required this.submittedDate,
     required this.initials,
+  });
+}
+
+class _Incident {
+  final String title;
+  final String location;
+  final String date;
+  final String priority;
+  final Color priorityColor;
+
+  const _Incident({
+    required this.title,
+    required this.location,
+    required this.date,
+    required this.priority,
+    required this.priorityColor,
   });
 }

@@ -10,39 +10,98 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../documents/repositories/document_repository.dart';
 
-class CitizenHomeScreen extends ConsumerWidget {
+class CitizenHomeScreen extends StatefulWidget {
   const CitizenHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authServiceProvider).currentUser;
-    final requestsAsyncValue = ref.watch(userRequestsProvider);
+  State<CitizenHomeScreen> createState() => _CitizenHomeScreenState();
+}
 
+class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
+  // Mock offline mode state
+  bool _isOffline = true;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeroGreeting(context, user),
-            const SizedBox(height: 24),
-            _buildQuickStats(requestsAsyncValue),
-            const SizedBox(height: 32),
-            _buildPrimaryActions(context),
-            const SizedBox(height: 32),
-            _buildSecondaryActions(context),
-            const SizedBox(height: 32),
-            _buildRecentActivity(context, requestsAsyncValue),
-            const SizedBox(height: 48),
-          ],
-        ),
+      body: Column(
+        children: [
+          if (_isOffline)
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 4,
+                bottom: 8,
+                left: 16,
+                right: 16,
+              ),
+              color: AppColors.warning, // Orange/Amber color
+              child: SafeArea(
+                bottom: false,
+                top: false,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.wifi_off_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'You are currently in Offline Mode',
+                      style: AppTextStyles.small.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.zero, // Remove implicit padding if any
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeroGreeting(context),
+                  const SizedBox(height: 24),
+                  _buildQuickStats(),
+                  const SizedBox(height: 24),
+                  _buildEmergencyButton(context),
+                  const SizedBox(height: 24),
+                  _buildPrimaryActions(context),
+                  const SizedBox(height: 32),
+                  _buildSecondaryActions(context),
+                  const SizedBox(height: 32),
+                  _buildRecentActivity(),
+                  const SizedBox(height: 48),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   // ── Hero Greeting ─────────────────────────────────────────────────────
-  Widget _buildHeroGreeting(BuildContext context, User? user) {
-    final topPadding = MediaQuery.of(context).padding.top;
+  Widget _buildHeroGreeting(BuildContext context) {
+    // Top padding is handled by the offline banner if visible, but if not, we need it.
+    // Or we can just let the Hero container handle its own internal padding as before.
+    // However, since the offline banner is outside the ScrollView, the Hero container
+    // is now just below it.
+
+    // If _isOffline is true, the top status bar area is covered/pushed by the banner.
+    // If we want the hero image to still look immersive, we might need adjustments.
+    // For now, let's keep the padding logic but adjust top padding to 0 if banner is present?
+    // Actually, simply removing 'topPadding' usage might be enough if the banner consumes the status bar area.
+    // But usually status bar is translucent.
+
+    final topPadding = _isOffline ? 0.0 : MediaQuery.of(context).padding.top;
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(24, topPadding + 20, 24, 32),
@@ -91,6 +150,22 @@ class CitizenHomeScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              IconButton(
+                onPressed: () => _showVoiceAssistant(context),
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.mic_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
               GestureDetector(
                 onTap: () {
                   context.push('/profile');
@@ -262,6 +337,127 @@ class CitizenHomeScreen extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // ── Voice Assistant ───────────────────────────────────────────────────
+  void _showVoiceAssistant(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: 280,
+        decoration: const BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.border,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 32),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.mic_rounded,
+                color: AppColors.primary,
+                size: 48,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Listening...',
+              style: AppTextStyles.h3.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Try saying "Report an incident"',
+              style: AppTextStyles.body.copyWith(color: AppColors.textMuted),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Emergency Button ──────────────────────────────────────────────────
+  Widget _buildEmergencyButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: ElevatedButton.icon(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Row(
+                  children: [
+                    Icon(Icons.warning_rounded, color: AppColors.error),
+                    SizedBox(width: 8),
+                    Text('Emergency Alert'),
+                  ],
+                ),
+                content: const Text(
+                  'Are you sure you want to report a critical threat? This will alert the Grama Niladhari and local authorities immediately.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => context.pop(),
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Emergency Alert Sent!'),
+                          backgroundColor: AppColors.error,
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.error,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('REPORT NOW'),
+                  ),
+                ],
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.error,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 4,
+            shadowColor: AppColors.error.withOpacity(0.4),
+          ),
+          icon: const Icon(Icons.sos_rounded, size: 28),
+          label: const Text(
+            'SOS / EMERGENCY REPORT',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 16,
+              letterSpacing: 1,
+            ),
+          ),
         ),
       ),
     );
@@ -444,6 +640,14 @@ class CitizenHomeScreen extends ConsumerWidget {
                   color: AppColors.info,
                   onTap: () => context.push('/documents/tracking'),
                   isFirst: true,
+                ),
+                const Divider(height: 1, indent: 72, color: AppColors.divider),
+                _buildSecondaryItem(
+                  icon: Icons.people_alt_rounded,
+                  title: 'Community Feed',
+                  subtitle: 'Lost & Found, Local Jobs',
+                  color: AppColors.accentPurple,
+                  onTap: () => context.push('/community'),
                 ),
                 const Divider(height: 1, indent: 72, color: AppColors.divider),
                 _buildSecondaryItem(
