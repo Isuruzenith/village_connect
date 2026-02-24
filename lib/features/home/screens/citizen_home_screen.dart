@@ -1,10 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../documents/screens/document_request_screen.dart';
-import '../../documents/screens/request_tracking_screen.dart';
-import '../../profile/screens/profile_screen.dart';
 
 class CitizenHomeScreen extends StatelessWidget {
   const CitizenHomeScreen({super.key});
@@ -86,9 +84,7 @@ class CitizenHomeScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                  );
+                  context.push('/profile');
                 },
                 child: Hero(
                   tag: 'profile_avatar',
@@ -269,9 +265,7 @@ class CitizenHomeScreen extends StatelessWidget {
             subtitle: 'Request certificates and official documents',
             accentColor: AppColors.primary,
             bgAssetPath: 'assets/images/card_bg_document.jpg',
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const DocumentRequestScreen()),
-            ),
+            onTap: () => context.push('/documents/request'),
           ),
           const SizedBox(height: 16),
           _buildPrimaryActionCard(
@@ -427,11 +421,7 @@ class CitizenHomeScreen extends StatelessWidget {
                   title: 'Track Application',
                   subtitle: 'View status of your requests',
                   color: AppColors.info,
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const RequestTrackingScreen(),
-                    ),
-                  ),
+                  onTap: () => context.push('/documents/tracking'),
                   isFirst: true,
                 ),
                 const Divider(height: 1, indent: 72, color: AppColors.divider),

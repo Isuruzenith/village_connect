@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import 'request_detail_screen.dart';
 
 class RequestTrackingScreen extends StatefulWidget {
   const RequestTrackingScreen({super.key});
@@ -93,7 +93,7 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
                 size: 20,
               ),
             ),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => context.pop(),
           ),
         ),
         title: Text(
@@ -247,14 +247,13 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => RequestDetailScreen(
-                trackingId: request.trackingId,
-                documentType: request.documentType,
-                status: request.status,
-              ),
-            ),
+          context.push(
+            '/documents/detail',
+            extra: {
+              'trackingId': request.trackingId,
+              'documentType': request.documentType,
+              'status': request.status,
+            },
           );
         },
         borderRadius: BorderRadius.circular(20),

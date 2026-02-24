@@ -33,7 +33,7 @@ class VcDashboardCard extends StatelessWidget {
             color: backgroundColor,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: iconColor.withValues(alpha: 0.15),
+              color: iconColor.withOpacity(0.15),
               width: 1,
             ),
           ),
@@ -47,7 +47,7 @@ class VcDashboardCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: [
                     BoxShadow(
-                      color: iconColor.withValues(alpha: 0.15),
+                      color: iconColor.withOpacity(0.15),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -75,7 +75,7 @@ class VcDashboardCard extends StatelessWidget {
               ),
               Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: iconColor.withValues(alpha: 0.5),
+                color: iconColor.withOpacity(0.5),
                 size: 18,
               ),
             ],

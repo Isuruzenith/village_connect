@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import 'add_community_post_screen.dart';
 
 class CommunityFeedScreen extends StatefulWidget {
   const CommunityFeedScreen({super.key});
@@ -117,7 +117,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
           indicatorColor: AppColors.textOnPrimary,
           indicatorWeight: 3,
           labelColor: AppColors.textOnPrimary,
-          unselectedLabelColor: AppColors.textOnPrimary.withValues(alpha: 0.6),
+          unselectedLabelColor: AppColors.textOnPrimary.withOpacity(0.6),
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
@@ -141,9 +141,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
         height: 56,
         child: FloatingActionButton(
           onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const AddCommunityPostScreen()),
-            );
+            context.push('/community/add');
           },
           backgroundColor: AppColors.primary,
           tooltip: 'Add post',
@@ -193,13 +191,13 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
                       Icon(
                         Icons.camera_alt_outlined,
                         size: 36,
-                        color: AppColors.textMuted.withValues(alpha: 0.5),
+                        color: AppColors.textMuted.withOpacity(0.5),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'No photo',
                         style: AppTextStyles.small.copyWith(
-                          color: AppColors.textMuted.withValues(alpha: 0.6),
+                          color: AppColors.textMuted.withOpacity(0.6),
                         ),
                       ),
                     ],

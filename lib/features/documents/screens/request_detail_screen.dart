@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
@@ -73,7 +74,7 @@ class RequestDetailScreen extends StatelessWidget {
             Icons.arrow_back_rounded,
             color: AppColors.textPrimary,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
         title: Text('Request Details', style: AppTextStyles.h3),
         centerTitle: true,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/vc_components.dart';
@@ -130,7 +131,7 @@ class _DocumentRequestScreenState extends State<DocumentRequestScreen> {
                 size: 20,
               ),
             ),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => context.pop(),
           ),
         ),
         title: Text(
@@ -980,8 +981,8 @@ class _DocumentRequestScreenState extends State<DocumentRequestScreen> {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop(); // close dialog
-                      Navigator.of(context).pop(); // go back
+                      context.pop(); // close dialog
+                      context.pop(); // go back
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
