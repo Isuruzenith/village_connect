@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0](https://github.com/Isuruzenith/village_connect/compare/v1.2.0...v1.3.0) (2026-02-24)
+
+
+### Features
+
+* Integrate Firebase Auth and Firestore business layer ([dec68b2](https://github.com/Isuruzenith/village_connect/commit/dec68b22ab794876ef2dcc06436a54240baf9bde))
+* Release ready Firebase integration with full UI connection ([cfd8ff5](https://github.com/Isuruzenith/village_connect/commit/cfd8ff57cd0f7686730aaf861681507b14412aff))
+
 ## [1.2.0](https://github.com/Isuruzenith/village_connect/compare/v1.1.1...v1.2.0) (2026-02-24)
 
 
