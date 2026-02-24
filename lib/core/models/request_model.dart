@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class RequestModel {
   final String id;
   final String userId;
@@ -34,13 +36,20 @@ class RequestModel {
       'address': address,
       'reason': reason,
       'status': status,
-      'submittedAt': submittedAt.toIso8601String(),
+      'submittedAt': Timestamp.fromDate(submittedAt),
       'rejectionReason': rejectionReason,
       'certificateUrl': certificateUrl,
     };
   }
 
   factory RequestModel.fromMap(Map<String, dynamic> map, String id) {
+    DateTime? date;
+    if (map['submittedAt'] is Timestamp) {
+      date = (map['submittedAt'] as Timestamp).toDate();
+    } else if (map['submittedAt'] is String) {
+      date = DateTime.tryParse(map['submittedAt']);
+    }
+
     return RequestModel(
       id: id,
       userId: map['userId'] ?? '',
@@ -50,7 +59,7 @@ class RequestModel {
       address: map['address'] ?? '',
       reason: map['reason'] ?? '',
       status: map['status'] ?? 'Pending',
-      submittedAt: DateTime.tryParse(map['submittedAt'] ?? '') ?? DateTime.now(),
+      submittedAt: date ?? DateTime.now(),
       rejectionReason: map['rejectionReason'],
       certificateUrl: map['certificateUrl'],
     );

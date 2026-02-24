@@ -1,13 +1,24 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import '../../../core/services/auth_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authServiceProvider).currentUser;
+
+    if (user == null) {
+      // Should not happen if guarded by auth state, but just in case
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -28,15 +39,15 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             const Divider(height: 1, color: AppColors.divider),
-            _buildProfileHeader(),
+            _buildProfileHeader(user),
             const SizedBox(height: 24),
-            _buildPersonalInfo(),
+            _buildPersonalInfo(user),
             const SizedBox(height: 20),
             _buildVillageInfo(),
             const SizedBox(height: 20),
             _buildSettingsSection(context),
             const SizedBox(height: 24),
-            _buildLogoutButton(context),
+            _buildLogoutButton(context, ref),
             const SizedBox(height: 32),
           ],
         ),
@@ -45,7 +56,8 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // ── Profile Header ────────────────────────────────────────────────────
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(User user) {
+    final initials = (user.displayName ?? 'C').substring(0, 1).toUpperCase();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -73,22 +85,30 @@ class ProfileScreen extends StatelessWidget {
                 color: Colors.white.withOpacity(0.25),
                 width: 2,
               ),
+              image: user.photoURL != null
+                  ? DecorationImage(
+                      image: NetworkImage(user.photoURL!),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
             ),
-            child: Center(
-              child: Text(
-                'KP',
-                style: AppTextStyles.h1.copyWith(color: Colors.white),
-              ),
-            ),
+            child: user.photoURL == null
+                ? Center(
+                    child: Text(
+                      initials,
+                      style: AppTextStyles.h1.copyWith(color: Colors.white),
+                    ),
+                  )
+                : null,
           ),
           const SizedBox(height: 16),
           Text(
-            'Kamal Perera',
+            user.displayName ?? 'Citizen',
             style: AppTextStyles.h2.copyWith(color: Colors.white),
           ),
           const SizedBox(height: 4),
           Text(
-            'NIC: 197512345678',
+            user.email ?? 'No Email',
             style: AppTextStyles.caption.copyWith(
               color: Colors.white.withOpacity(0.7),
             ),
@@ -114,14 +134,14 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // ── Personal Information ──────────────────────────────────────────────
-  Widget _buildPersonalInfo() {
+  Widget _buildPersonalInfo(User user) {
     return _buildInfoSection(
       title: 'Personal Information',
       items: [
-        _InfoRow(Icons.person_outline_rounded, 'Full Name', 'Kamal Perera'),
-        _InfoRow(Icons.phone_outlined, 'Phone', '+94 77 234 5678'),
-        _InfoRow(Icons.email_outlined, 'Email', 'kamal.perera@email.com'),
-        _InfoRow(Icons.cake_outlined, 'Date of Birth', '15 March 1975'),
+        _InfoRow(Icons.person_outline_rounded, 'Full Name', user.displayName ?? 'N/A'),
+        _InfoRow(Icons.email_outlined, 'Email', user.email ?? 'N/A'),
+        _InfoRow(Icons.phone_outlined, 'Phone', user.phoneNumber ?? 'N/A'),
+        _InfoRow(Icons.verified_user_outlined, 'User ID', user.uid.substring(0, 8)),
       ],
     );
   }
@@ -296,15 +316,16 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // ── Logout ────────────────────────────────────────────────────────────
-  Widget _buildLogoutButton(BuildContext context) {
+  Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: SizedBox(
         width: double.infinity,
         height: 52,
         child: OutlinedButton.icon(
-          onPressed: () {
-            context.go('/auth/login');
+          onPressed: () async {
+            await ref.read(authServiceProvider).signOut();
+            // AppRouter will handle redirection
           },
           icon: const Icon(Icons.logout_rounded, size: 20),
           label: const Text('Sign Out'),

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class NoticeModel {
   final String id;
   final String title;
@@ -18,12 +20,19 @@ class NoticeModel {
   });
 
   factory NoticeModel.fromMap(Map<String, dynamic> map, String id) {
+    DateTime? date;
+    if (map['date'] is Timestamp) {
+      date = (map['date'] as Timestamp).toDate();
+    } else if (map['date'] is String) {
+      date = DateTime.tryParse(map['date']);
+    }
+
     return NoticeModel(
       id: id,
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       category: map['category'] ?? '',
-      date: DateTime.tryParse(map['date'] ?? '') ?? DateTime.now(),
+      date: date ?? DateTime.now(),
       isVerified: map['isVerified'] ?? false,
       attachmentUrl: map['attachmentUrl'],
     );

@@ -29,8 +29,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _login() {
     if (_formKey.currentState!.validate()) {
-      // Mock login for NIC/Password for now as we focus on Google Auth
-      context.go('/home');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please use Google Sign In. NIC login is coming soon.'),
+        ),
+      );
     }
   }
 

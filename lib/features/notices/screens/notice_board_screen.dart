@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import '../../../core/models/notice_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../repositories/notice_repository.dart';
 
-class NoticeBoardScreen extends StatefulWidget {
+class NoticeBoardScreen extends ConsumerStatefulWidget {
   const NoticeBoardScreen({super.key});
 
   @override
-  State<NoticeBoardScreen> createState() => _NoticeBoardScreenState();
+  ConsumerState<NoticeBoardScreen> createState() => _NoticeBoardScreenState();
 }
 
-class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
+class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
   String _selectedCategory = 'All';
   final _searchController = TextEditingController();
 
@@ -23,51 +27,8 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
     'Health',
   ];
 
-  final List<_Notice> _notices = [
-    _Notice(
-      title: 'New Road Development Project',
-      body:
-          'Construction of new asphalt road from Kaduwela junction to Welivita temple will commence on March 5. Expected completion: June 2026.',
-      category: 'Development',
-      date: '24 Feb 2026',
-      isOfficial: true,
-    ),
-    _Notice(
-      title: 'Dengue Prevention Campaign',
-      body:
-          'All residents are requested to destroy mosquito breeding sites. Village-wide fogging scheduled for February 28 from 6 PM.',
-      category: 'Health',
-      date: '23 Feb 2026',
-      isOfficial: true,
-    ),
-    _Notice(
-      title: 'GN Office Hours Change',
-      body:
-          'Starting March 1, 2026, the GN Office will be open from 8:30 AM to 4:30 PM (Monday–Friday). Saturday hours remain 9 AM – 12 PM.',
-      category: 'General',
-      date: '22 Feb 2026',
-      isOfficial: true,
-    ),
-    _Notice(
-      title: 'Water Supply Interruption',
-      body:
-          'Water supply will be interrupted on Feb 26 from 8 AM to 5 PM due to pipeline maintenance. Please store sufficient water.',
-      category: 'Emergency',
-      date: '21 Feb 2026',
-      isOfficial: true,
-    ),
-    _Notice(
-      title: 'Annual Village Sports Festival',
-      body:
-          'The annual sports festival will be held on March 15 at Kaduwela Playground. Registration open for all age groups. Contact GN Office for details.',
-      category: 'General',
-      date: '20 Feb 2026',
-      isOfficial: false,
-    ),
-  ];
-
-  List<_Notice> get _filteredNotices {
-    var filtered = _notices;
+  List<NoticeModel> _filterNotices(List<NoticeModel> notices) {
+    var filtered = notices;
     if (_selectedCategory != 'All') {
       filtered = filtered
           .where((n) => n.category == _selectedCategory)
@@ -79,7 +40,7 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
           .where(
             (n) =>
                 n.title.toLowerCase().contains(query) ||
-                n.body.toLowerCase().contains(query),
+                n.description.toLowerCase().contains(query),
           )
           .toList();
     }
@@ -94,6 +55,8 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final noticesAsync = ref.watch(noticesProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -105,7 +68,13 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
             const SizedBox(height: 16),
             _buildFilterChips(),
             const SizedBox(height: 16),
-            Expanded(child: _buildNoticesList()),
+            Expanded(
+              child: noticesAsync.when(
+                data: (notices) => _buildNoticesList(_filterNotices(notices)),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(child: Text('Error: $err')),
+              ),
+            ),
           ],
         ),
       ),
@@ -230,8 +199,7 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
     );
   }
 
-  Widget _buildNoticesList() {
-    final filtered = _filteredNotices;
+  Widget _buildNoticesList(List<NoticeModel> filtered) {
     if (filtered.isEmpty) {
       return Center(
         child: Column(
@@ -287,7 +255,7 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
     );
   }
 
-  Widget _buildNoticeCard(_Notice notice) {
+  Widget _buildNoticeCard(NoticeModel notice) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -296,10 +264,10 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
             '/notice-detail',
             extra: {
               'title': notice.title,
-              'content': notice.body,
+              'content': notice.description,
               'category': notice.category,
-              'date': notice.date,
-              'hasAttachment': 'false',
+              'date': DateFormat.yMMMd().format(notice.date),
+              'hasAttachment': (notice.attachmentUrl != null).toString(),
             },
           );
         },
@@ -340,7 +308,7 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
                       ),
                     ),
                   ),
-                  if (notice.isOfficial) ...[
+                  if (notice.isVerified) ...[
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -373,7 +341,7 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
                   ],
                   const Spacer(),
                   Text(
-                    notice.date,
+                    DateFormat.yMMMd().format(notice.date),
                     style: AppTextStyles.small.copyWith(
                       color: AppColors.textMuted,
                     ),
@@ -390,7 +358,7 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                notice.body,
+                notice.description,
                 style: AppTextStyles.body.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.5,
@@ -417,20 +385,4 @@ class _NoticeBoardScreenState extends State<NoticeBoardScreen> {
         return AppColors.primary;
     }
   }
-}
-
-class _Notice {
-  final String title;
-  final String body;
-  final String category;
-  final String date;
-  final bool isOfficial;
-
-  const _Notice({
-    required this.title,
-    required this.body,
-    required this.category,
-    required this.date,
-    required this.isOfficial,
-  });
 }
