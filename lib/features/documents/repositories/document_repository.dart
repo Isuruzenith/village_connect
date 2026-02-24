@@ -15,7 +15,7 @@ final userRequestsProvider = StreamProvider<List<RequestModel>>((ref) {
       return ref.watch(documentRepositoryProvider).getUserRequests(user.uid);
     },
     loading: () => Stream.value([]),
-    error: (_, __) => Stream.value([]),
+    error: (_, _) => Stream.value([]),
   );
 });
 

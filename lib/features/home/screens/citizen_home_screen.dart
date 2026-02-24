@@ -19,7 +19,7 @@ class CitizenHomeScreen extends StatefulWidget {
 
 class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
   // Mock offline mode state
-  bool _isOffline = true;
+  final bool _isOffline = true;
 
   @override
   Widget build(BuildContext context) {
