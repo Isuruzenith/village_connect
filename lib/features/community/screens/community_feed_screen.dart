@@ -161,7 +161,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: _lostFoundItems.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final item = _lostFoundItems[index];
         final isLost = item['type'] == 'Lost';
@@ -319,7 +319,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen>
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: _jobItems.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final job = _jobItems[index];
 

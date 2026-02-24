@@ -136,7 +136,7 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 24),
         itemCount: _filters.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
           final filter = _filters[index];
           final isSelected = _selectedFilter == filter;
@@ -227,7 +227,7 @@ class _RequestTrackingScreenState extends State<RequestTrackingScreen> {
       child: ListView.separated(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
         itemCount: filtered.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 16),
+        separatorBuilder: (_, _) => const SizedBox(height: 16),
         itemBuilder: (context, index) {
           return AnimationConfiguration.staggeredList(
             position: index,

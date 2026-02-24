@@ -33,8 +33,8 @@ class _AppShellState extends State<AppShell> {
   void _openChatbot() {
     Navigator.of(context).push(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const ChatbotScreen(),
-        transitionsBuilder: (_, animation, __, child) {
+        pageBuilder: (_, _, _) => const ChatbotScreen(),
+        transitionsBuilder: (_, animation, _, child) {
           return SlideTransition(
             position:
                 Tween<Offset>(

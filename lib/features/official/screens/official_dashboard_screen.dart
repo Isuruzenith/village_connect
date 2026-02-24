@@ -132,7 +132,7 @@ class _OfficialDashboardScreenState extends State<OfficialDashboardScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: _stats.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final stat = _stats[index];
           return Container(

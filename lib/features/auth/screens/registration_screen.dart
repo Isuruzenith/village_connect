@@ -431,7 +431,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         Text(label, style: AppTextStyles.label),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: value.isEmpty ? null : value,
+          initialValue: value.isEmpty ? null : value,
           onChanged: onChanged,
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: AppColors.textMuted, size: 20),

@@ -109,7 +109,7 @@ class _LanguageSelectorScreenState extends State<LanguageSelectorScreen> {
                 child: ListView.separated(
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: _languages.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 16),
+                  separatorBuilder: (_, _) => const SizedBox(height: 16),
                   itemBuilder: (context, index) {
                     final lang = _languages[index];
                     final bool isSelected = _selectedIndex == index;
