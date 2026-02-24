@@ -406,80 +406,154 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
       ),
       child: SafeArea(
         top: false,
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: SizedBox(
-                height: 48,
-                child: OutlinedButton(
-                  onPressed: () => _showConfirmationDialog('reject'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.error,
-                    side: const BorderSide(color: AppColors.error, width: 1.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: () => _showDigitalSignatureDialog(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.success,
+                  foregroundColor: AppColors.textOnPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
-                    'Reject',
-                    style: AppTextStyles.buttonSmall.copyWith(
-                      color: AppColors.error,
-                    ),
+                  elevation: 0,
+                ),
+                icon: const Icon(Icons.verified_user_rounded, size: 20),
+                label: Text(
+                  'Digitally Sign & Approve',
+                  style: AppTextStyles.buttonSmall.copyWith(
+                    color: AppColors.textOnPrimary,
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: SizedBox(
-                height: 48,
-                child: OutlinedButton(
-                  onPressed: () => _showConfirmationDialog('request info'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.warning,
-                    side: const BorderSide(
-                      color: AppColors.warning,
-                      width: 1.5,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    'Request Info',
-                    style: AppTextStyles.buttonSmall.copyWith(
-                      color: AppColors.warning,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: SizedBox(
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () => _showConfirmationDialog('approve'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.success,
-                    foregroundColor: AppColors.textOnPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    'Approve',
-                    style: AppTextStyles.buttonSmall.copyWith(
-                      color: AppColors.textOnPrimary,
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 48,
+                    child: OutlinedButton(
+                      onPressed: () => _showConfirmationDialog('reject'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.error,
+                        side: const BorderSide(
+                          color: AppColors.error,
+                          width: 1.5,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Reject',
+                        style: AppTextStyles.buttonSmall.copyWith(
+                          color: AppColors.error,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: SizedBox(
+                    height: 48,
+                    child: OutlinedButton(
+                      onPressed: () => _showConfirmationDialog('request info'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.warning,
+                        side: const BorderSide(
+                          color: AppColors.warning,
+                          width: 1.5,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Request Info',
+                        style: AppTextStyles.buttonSmall.copyWith(
+                          color: AppColors.warning,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showDigitalSignatureDialog() {
+    final pinController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text('Digital Signature Required'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Please enter your secure 4-digit PIN to digitally sign and approve this request.',
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: pinController,
+                keyboardType: TextInputType.number,
+                obscureText: true,
+                maxLength: 4,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.h2.copyWith(letterSpacing: 8),
+                decoration: InputDecoration(
+                  counterText: '',
+                  hintText: 'PIN',
+                  hintStyle: AppTextStyles.h3.copyWith(
+                    color: AppColors.textMuted,
+                    letterSpacing: 2,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => dialogContext.pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (pinController.text == '1234') {
+                  dialogContext.pop();
+                  _onActionConfirmed('Approved with Digital Signature');
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Invalid PIN. Please try again.'),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+              },
+              child: const Text('Sign & Approve'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -489,10 +563,6 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
     IconData actionIcon;
 
     switch (action) {
-      case 'approve':
-        actionColor = AppColors.success;
-        actionIcon = Icons.check_circle_outline_rounded;
-        break;
       case 'reject':
         actionColor = AppColors.error;
         actionIcon = Icons.cancel_outlined;
