@@ -23,6 +23,8 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Column(
@@ -66,9 +68,9 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeroGreeting(context),
+                  _buildHeroGreeting(context, user),
                   const SizedBox(height: 24),
-                  _buildQuickStats(),
+                  _buildQuickStats(const AsyncData([])),
                   const SizedBox(height: 24),
                   _buildEmergencyButton(context),
                   const SizedBox(height: 24),
@@ -76,7 +78,7 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
                   const SizedBox(height: 32),
                   _buildSecondaryActions(context),
                   const SizedBox(height: 32),
-                  _buildRecentActivity(),
+                  _buildRecentActivity(context, const AsyncData([])),
                   const SizedBox(height: 48),
                 ],
               ),
@@ -88,7 +90,7 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
   }
 
   // ── Hero Greeting ─────────────────────────────────────────────────────
-  Widget _buildHeroGreeting(BuildContext context) {
+  Widget _buildHeroGreeting(BuildContext context, User? user) {
     // Top padding is handled by the offline banner if visible, but if not, we need it.
     // Or we can just let the Hero container handle its own internal padding as before.
     // However, since the offline banner is outside the ScrollView, the Hero container
