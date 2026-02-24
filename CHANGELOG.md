@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/Isuruzenith/village_connect/compare/v1.1.0...v1.1.1) (2026-02-24)
+
+
+### Bug Fixes
+
+* Update separatorBuilder syntax for consistency across multiple screens ([dd5733c](https://github.com/Isuruzenith/village_connect/commit/dd5733cf1f133a690bcb41e69e1451d16a147993))
+
 ## [1.1.0](https://github.com/Isuruzenith/village_connect/compare/v1.0.0...v1.1.0) (2026-02-24)
 
 
