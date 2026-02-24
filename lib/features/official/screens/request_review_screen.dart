@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
@@ -57,7 +58,7 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
             Icons.arrow_back_rounded,
             color: AppColors.textPrimary,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
           tooltip: 'Go back',
         ),
         title: Text(
@@ -517,7 +518,7 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  color: actionColor.withValues(alpha: 0.1),
+                  color: actionColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(actionIcon, color: actionColor, size: 32),
@@ -543,7 +544,7 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
                   child: SizedBox(
                     height: 48,
                     child: OutlinedButton(
-                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      onPressed: () => dialogContext.pop(),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textSecondary,
                         side: const BorderSide(color: AppColors.border),
@@ -566,7 +567,7 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(dialogContext).pop();
+                        dialogContext.pop();
                         _onActionConfirmed(actionLabel);
                       },
                       style: ElevatedButton.styleFrom(
@@ -603,7 +604,7 @@ class _RequestReviewScreenState extends State<RequestReviewScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
-    Navigator.of(context).pop();
+    context.pop();
   }
 }
 

@@ -1,71 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../notifications/screens/notifications_screen.dart';
-import '../../notices/screens/notice_board_screen.dart';
-import '../../help/screens/help_screen.dart';
-import '../../chatbot/screens/chatbot_screen.dart';
-import 'citizen_home_screen.dart';
 
-class AppShell extends StatefulWidget {
-  const AppShell({super.key});
+class AppShell extends StatelessWidget {
+  final StatefulNavigationShell navigationShell;
 
-  @override
-  State<AppShell> createState() => _AppShellState();
-}
-
-class _AppShellState extends State<AppShell> {
-  int _currentIndex = 0;
-
-  final List<Widget> _screens = const [
-    CitizenHomeScreen(),
-    NotificationsScreen(),
-    SizedBox(), // Placeholder for FAB
-    NoticeBoardScreen(),
-    HelpScreen(),
-  ];
+  const AppShell({super.key, required this.navigationShell});
 
   void _onTabTapped(int index) {
     if (index == 2) return; // Center FAB slot — skip
-    setState(() => _currentIndex = index);
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
   }
 
-  void _openChatbot() {
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        pageBuilder: (_, _, _) => const ChatbotScreen(),
-        transitionsBuilder: (_, animation, _, child) {
-          return SlideTransition(
-            position:
-                Tween<Offset>(
-                  begin: const Offset(0.0, 0.3),
-                  end: Offset.zero,
-                ).animate(
-                  CurvedAnimation(parent: animation, curve: Curves.easeOut),
-                ),
-            child: FadeTransition(opacity: animation, child: child),
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 350),
-      ),
-    );
+  void _openChatbot(BuildContext context) {
+    context.push('/chatbot');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: IndexedStack(
-        index: _currentIndex > 2 ? _currentIndex : _currentIndex,
-        children: _screens,
-      ),
-      floatingActionButton: _buildFab(),
+      body: navigationShell,
+      floatingActionButton: _buildFab(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _buildBottomBar(),
     );
   }
 
-  Widget _buildFab() {
+  Widget _buildFab(BuildContext context) {
     return Container(
       width: 58,
       height: 58,
@@ -83,7 +49,7 @@ class _AppShellState extends State<AppShell> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: _openChatbot,
+          onTap: () => _openChatbot(context),
           borderRadius: BorderRadius.circular(18),
           child: const Icon(
             Icons.smart_toy_outlined,
@@ -142,7 +108,7 @@ class _AppShellState extends State<AppShell> {
     IconData activeIcon,
     String label,
   ) {
-    final isActive = _currentIndex == index;
+    final isActive = navigationShell.currentIndex == index;
     return Expanded(
       child: Material(
         color: Colors.transparent,

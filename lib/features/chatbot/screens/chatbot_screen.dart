@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
@@ -92,7 +93,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
+            onPressed: () => ctx.pop(),
             child: Text(
               'Cancel',
               style: AppTextStyles.button.copyWith(
@@ -102,7 +103,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(ctx).pop();
+              ctx.pop();
               setState(() {
                 _messages.clear();
                 _messages.add(
@@ -116,7 +117,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
               });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error.withValues(alpha:0.1),
+              backgroundColor: AppColors.error.withOpacity(0.1),
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -242,7 +243,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
           icon: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.surfaceGrey.withValues(alpha:0.5),
+              color: AppColors.surfaceGrey.withOpacity(0.5),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -251,7 +252,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
               size: 20,
             ),
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
       ),
       title: Row(
@@ -268,7 +269,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha:0.3),
+                  color: AppColors.primary.withOpacity(0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -302,7 +303,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.success.withValues(alpha:0.5),
+                          color: AppColors.success.withOpacity(0.5),
                           blurRadius: 4,
                         ),
                       ],
@@ -329,7 +330,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
           icon: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.error.withValues(alpha:0.1),
+                color: AppColors.error.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -348,10 +349,10 @@ class _ChatbotScreenState extends State<ChatbotScreen>
         child: Container(
           height: 1,
           decoration: BoxDecoration(
-            color: AppColors.border.withValues(alpha:0.3),
+            color: AppColors.border.withOpacity(0.3),
             boxShadow: [
               BoxShadow(
-                color: AppColors.shadowLight.withValues(alpha:0.02),
+                color: AppColors.shadowLight.withOpacity(0.02),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -367,9 +368,9 @@ class _ChatbotScreenState extends State<ChatbotScreen>
       margin: const EdgeInsets.symmetric(vertical: 10),
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: AppColors.surfaceGrey.withValues(alpha:0.5),
+        color: AppColors.surfaceGrey.withOpacity(0.5),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border.withValues(alpha:0.5)),
+        border: Border.all(color: AppColors.border.withOpacity(0.5)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -444,7 +445,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
       child: Row(
         children: [
           Expanded(
-            child: Container(height: 1, color: AppColors.border.withValues(alpha:0.4)),
+            child: Container(height: 1, color: AppColors.border.withOpacity(0.4)),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -457,7 +458,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
             ),
           ),
           Expanded(
-            child: Container(height: 1, color: AppColors.border.withValues(alpha:0.4)),
+            child: Container(height: 1, color: AppColors.border.withOpacity(0.4)),
           ),
         ],
       ),
@@ -486,7 +487,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha:0.2),
+                      color: AppColors.primary.withOpacity(0.2),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -508,10 +509,10 @@ class _ChatbotScreenState extends State<ChatbotScreen>
                   bottomLeft: Radius.circular(4),
                   bottomRight: Radius.circular(20),
                 ),
-                border: Border.all(color: AppColors.border.withValues(alpha:0.5)),
+                border: Border.all(color: AppColors.border.withOpacity(0.5)),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.shadowLight.withValues(alpha:0.15),
+                    color: AppColors.shadowLight.withOpacity(0.15),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -551,15 +552,15 @@ class _ChatbotScreenState extends State<ChatbotScreen>
                     _sendMessage();
                   },
                   borderRadius: BorderRadius.circular(22),
-                  splashColor: AppColors.primary.withValues(alpha:0.12),
-                  highlightColor: AppColors.primary.withValues(alpha:0.06),
+                  splashColor: AppColors.primary.withOpacity(0.12),
+                  highlightColor: AppColors.primary.withOpacity(0.06),
                   child: Ink(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha:0.06),
+                      color: AppColors.primary.withOpacity(0.06),
                       borderRadius: BorderRadius.circular(22),
                       border:
-                          Border.all(color: AppColors.primary.withValues(alpha:0.18)),
+                          Border.all(color: AppColors.primary.withOpacity(0.18)),
                     ),
                     child: Center(
                       child: Text(
@@ -588,12 +589,12 @@ class _ChatbotScreenState extends State<ChatbotScreen>
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
           color: _hasInputText
-              ? AppColors.primary.withValues(alpha:0.4)
-              : AppColors.border.withValues(alpha:0.5),
+              ? AppColors.primary.withOpacity(0.4)
+              : AppColors.border.withOpacity(0.5),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowLight.withValues(alpha:0.06),
+            color: AppColors.shadowLight.withOpacity(0.06),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -658,7 +659,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
                   boxShadow: _hasInputText
                       ? [
                           BoxShadow(
-                            color: AppColors.primary.withValues(alpha:0.3),
+                            color: AppColors.primary.withOpacity(0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -712,7 +713,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
             height: 44,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.border.withValues(alpha:0.5)),
+              border: Border.all(color: AppColors.border.withOpacity(0.5)),
             ),
             child: const Icon(
               Icons.keyboard_arrow_down_rounded,
@@ -815,7 +816,7 @@ class _MessageBubbleAnimatedState extends State<_MessageBubbleAnimated>
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withValues(alpha:0.2),
+                              color: AppColors.primary.withOpacity(0.2),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -855,14 +856,14 @@ class _MessageBubbleAnimatedState extends State<_MessageBubbleAnimated>
                           ),
                           border: message.isBot
                               ? Border.all(
-                                  color: AppColors.border.withValues(alpha:0.5))
+                                  color: AppColors.border.withOpacity(0.5))
                               : null,
                           boxShadow: [
                             BoxShadow(
                               color: (message.isBot
                                       ? AppColors.shadowLight
                                       : AppColors.primary)
-                                  .withValues(alpha:0.15),
+                                  .withOpacity(0.15),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -955,7 +956,7 @@ class _TypingDotsState extends State<_TypingDots>
                   width: 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: AppColors.textMuted.withValues(alpha:0.5 + 0.5 * (1 - t)),
+                    color: AppColors.textMuted.withOpacity(0.5 + 0.5 * (1 - t)),
                     shape: BoxShape.circle,
                   ),
                 ),

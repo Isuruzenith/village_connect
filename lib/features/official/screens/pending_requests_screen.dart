@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import 'request_review_screen.dart';
 
 class PendingRequestsScreen extends StatefulWidget {
   const PendingRequestsScreen({super.key});
@@ -103,7 +103,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen> {
             Icons.arrow_back_rounded,
             color: AppColors.textPrimary,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
           tooltip: 'Go back',
         ),
         title: Text(
@@ -186,7 +186,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen> {
             Icon(
               Icons.inbox_outlined,
               size: 56,
-              color: AppColors.textMuted.withValues(alpha: 0.5),
+              color: AppColors.textMuted.withOpacity(0.5),
             ),
             const SizedBox(height: 12),
             Text(
@@ -264,11 +264,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen> {
             height: 48,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const RequestReviewScreen(),
-                  ),
-                );
+                context.push('/official/review');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,

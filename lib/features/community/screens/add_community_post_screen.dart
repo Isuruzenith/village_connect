@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
@@ -59,7 +60,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
           backgroundColor: AppColors.success,
         ),
       );
-      Navigator.of(context).pop();
+      context.pop();
     }
   }
 
@@ -73,7 +74,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
           tooltip: 'Back',
         ),
         title: const Text(
@@ -235,7 +236,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
                   ),
                   child: CustomPaint(
                     painter: _DashedBorderPainter(
-                      color: AppColors.textMuted.withValues(alpha: 0.4),
+                      color: AppColors.textMuted.withOpacity(0.4),
                       strokeWidth: 1.5,
                       dashLength: 8,
                       gapLength: 5,
@@ -248,7 +249,7 @@ class _AddCommunityPostScreenState extends State<AddCommunityPostScreen> {
                           Icon(
                             Icons.camera_alt_outlined,
                             size: 36,
-                            color: AppColors.textMuted.withValues(alpha: 0.6),
+                            color: AppColors.textMuted.withOpacity(0.6),
                           ),
                           const SizedBox(height: 8),
                           Text(
