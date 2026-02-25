@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/Isuruzenith/village_connect/compare/v1.3.0...v1.4.0) (2026-02-25)
+
+
+### Features
+
+* Add new app router and citizen home screen. ([37d26cb](https://github.com/Isuruzenith/village_connect/commit/37d26cbe1a8a0eda6fb402f74673822f2b91a416))
+* integrate Firebase configuration and update options for multiple platforms ([30f4d7c](https://github.com/Isuruzenith/village_connect/commit/30f4d7c361479fa31580fe5926223c8e2f088d91))
+
+
+### Bug Fixes
+
+* update error handling in userRequestsProvider and change _isOffline to final ([b64e498](https://github.com/Isuruzenith/village_connect/commit/b64e498e515927ca2c359924e27c2b44b168f842))
+
 ## [1.3.0](https://github.com/Isuruzenith/village_connect/compare/v1.2.0...v1.3.0) (2026-02-24)
 
 
