@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.4.1](https://github.com/Isuruzenith/village_connect/compare/v1.4.0...v1.4.1) (2026-02-26)
+
+
+### Bug Fixes
+
+* Enhance user registration and authentication flow with Firestore rules and error handling ([aac1682](https://github.com/Isuruzenith/village_connect/commit/aac1682eae803ce1eb9e2019087273230f321b3a))
+* Implement user registration and authentication with email, password, and Google account linking ([4765102](https://github.com/Isuruzenith/village_connect/commit/4765102c94eb897a48718b8d94db38eef816715f))
+
+## [1.4.0](https://github.com/Isuruzenith/village_connect/compare/v1.3.0...v1.4.0) (2026-02-25)
+
+
+### Features
+
+* Add new app router and citizen home screen. ([37d26cb](https://github.com/Isuruzenith/village_connect/commit/37d26cbe1a8a0eda6fb402f74673822f2b91a416))
+* integrate Firebase configuration and update options for multiple platforms ([30f4d7c](https://github.com/Isuruzenith/village_connect/commit/30f4d7c361479fa31580fe5926223c8e2f088d91))
+
+
+### Bug Fixes
+
+* update error handling in userRequestsProvider and change _isOffline to final ([b64e498](https://github.com/Isuruzenith/village_connect/commit/b64e498e515927ca2c359924e27c2b44b168f842))
+
 ## [1.3.0](https://github.com/Isuruzenith/village_connect/compare/v1.2.0...v1.3.0) (2026-02-24)
 
 

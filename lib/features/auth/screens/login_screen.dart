@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/validators.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -27,13 +29,49 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  void _login() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please use Google Sign In. NIC login is coming soon.'),
-        ),
-      );
+  Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isLoading = true);
+    try {
+      final email = Validators.nicToEmail(_nicController.text);
+      await ref
+          .read(authServiceProvider)
+          .signInWithEmail(email, _passwordController.text);
+      if (mounted) {
+        context.go('/home');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        String message;
+        switch (e.code) {
+          case 'user-not-found':
+            message = 'No account found for this NIC. Please register first.';
+            break;
+          case 'wrong-password':
+            message = 'Incorrect password. Please try again.';
+            break;
+          case 'invalid-credential':
+            message = 'Invalid NIC or password. Please check and try again.';
+            break;
+          case 'operation-not-allowed':
+            message =
+                'Email/Password sign-in is not enabled. Please contact the administrator.';
+            break;
+          default:
+            message = 'Login failed: ${e.message}';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -86,12 +124,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         controller: _nicController,
                         hint: 'Enter your NIC number',
                         prefixIcon: Icons.badge_outlined,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'NIC number is required';
-                          }
-                          return null;
-                        },
+                        validator: Validators.validateNic,
                       ),
                       const SizedBox(height: 20),
                       _buildFieldLabel('Password'),
