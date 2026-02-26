@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.1](https://github.com/Isuruzenith/village_connect/compare/v1.4.0...v1.4.1) (2026-02-26)
+
+
+### Bug Fixes
+
+* Enhance user registration and authentication flow with Firestore rules and error handling ([aac1682](https://github.com/Isuruzenith/village_connect/commit/aac1682eae803ce1eb9e2019087273230f321b3a))
+* Implement user registration and authentication with email, password, and Google account linking ([4765102](https://github.com/Isuruzenith/village_connect/commit/4765102c94eb897a48718b8d94db38eef816715f))
+
 ## [1.4.0](https://github.com/Isuruzenith/village_connect/compare/v1.3.0...v1.4.0) (2026-02-25)
 
 
