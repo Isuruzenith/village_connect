@@ -156,7 +156,10 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Registration failed. Please try again.';
+        _errorMessage = e.toString().contains('operation-not-allowed') ||
+                e.toString().contains('sign-in provider is disabled')
+            ? 'Email/Password sign-in is not enabled. Please contact the administrator to enable it in the Firebase Console.'
+            : 'Registration failed. Please try again.';
       });
     }
   }
@@ -169,6 +172,8 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
         return 'Password is too weak. Please choose a stronger one.';
       case 'invalid-email':
         return 'Internal error: invalid email format.';
+      case 'operation-not-allowed':
+        return 'Email/Password sign-in is not enabled. Please contact the administrator to enable it in the Firebase Console.';
       default:
         return 'Registration failed ($code). Please try again.';
     }

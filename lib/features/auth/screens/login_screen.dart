@@ -53,6 +53,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           case 'invalid-credential':
             message = 'Invalid NIC or password. Please check and try again.';
             break;
+          case 'operation-not-allowed':
+            message =
+                'Email/Password sign-in is not enabled. Please contact the administrator.';
+            break;
           default:
             message = 'Login failed: ${e.message}';
         }

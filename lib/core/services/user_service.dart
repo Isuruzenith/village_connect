@@ -33,11 +33,21 @@ class UserService {
   }
 
   /// Check if a NIC is already registered.
+  ///
+  /// Returns `false` when Firestore rules deny the read so that
+  /// registration can proceed (Firebase Auth will still enforce
+  /// uniqueness via the email-already-in-use error).
   Future<bool> isNicRegistered(String nic) async {
-    final query = await _usersCollection
-        .where('nic', isEqualTo: nic)
-        .limit(1)
-        .get();
-    return query.docs.isNotEmpty;
+    try {
+      final query = await _usersCollection
+          .where('nic', isEqualTo: nic)
+          .limit(1)
+          .get();
+      return query.docs.isNotEmpty;
+    } catch (e) {
+      // If Firestore rules deny the read, allow registration to continue.
+      // Duplicate NIC will still be caught by Firebase Auth (email-already-in-use).
+      return false;
+    }
   }
 }
